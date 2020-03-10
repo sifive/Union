@@ -202,17 +202,25 @@ def do_firrtl_jar(mkdir, cd, cpTarget, cpDest):
     JAVA = "/usr/bin/java"
     SBT = JAVA + " -Xmx6G -Xss8M -XX:MaxPermSize=256M -jar " + rocketchip_root + "/sbt-launch.jar"
     os.makedirs(mkdir)
-    os.system("cd "+ cd)
+    print("====================================================================")
+    os.chdir(cd)
+    print(os.getcwd())
+
     os.system(SBT + " assembly")
+    print(SBT + " assembly")
+    print("====================================================================")
     os.system("cp " + cpTarget + " " + cpDest)
-    os.system("cd -")
+    #os.chdir("OLDCWD")
 
 def do_federation_jar(mkdir, cd):
     JAVA = "/usr/bin/java"
     SBT = JAVA + " -Xmx6G -Xss8M -XX:MaxPermSize=256M -jar " + rocketchip_root + "/sbt-launch.jar"
-    os.system("cd "+ cd)
+    print("===================================================================")
+    os.chdir(cd)
+    print("cd " + cd)
+    print("===================================================================")
     os.system(SBT + " assembly")
-    os.system("cd -")
+    #os.chdir("OLDCWD")
 
 
 def create_F_file(reference_folder, file_type, F_file_dir):
@@ -275,6 +283,9 @@ def main():
     wake_firrtl = os.path.join(wake_build, "firrtl")
     os.system("cp -r " + wake_firrtl + " " + build_dir) #ACTION, since it's copied, could be wrong
 
+    wake_sitest = os.path.join(wake_build, "verilog", "e31.sitest")
+    os.system("cp " + wake_sitest + " " + verilog_build_dir)
+
 
 #==========================================================================================
     #verilog_build_conf
@@ -282,38 +293,61 @@ def main():
     os.system("cp -r " + wake_metadata + " " + metadata_build_dir)
     #FIRRTL cmd
     wake_CMDLINE_ANNO_FILE      = os.path.join(wake_build, "firrtl", "e31.cmdline.anno.json")
-    fedr_CMDLINE_ANNO_FILE      = os.path.join(firrtl_build_dir, "e31.cmdline.anno.json")
+    fedr_CMDLINE_ANNO_FILE      = os.path.join(verilog_build_dir, "e31.cmdline.anno.json")
     os.system("cp " + wake_CMDLINE_ANNO_FILE + " " + fedr_CMDLINE_ANNO_FILE)
-    verilog_build_design_dir    = os.path.join(verilog_build_dir, "design") #NOTICEME
+    verilog_build_design_dir    = os.path.join(verilog_build_dir, "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations") #NOTICEME
+    verilog_build_testbn_dir    = os.path.join(verilog_build_dir, "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.testbench") #NOTICEME
+    VERILOG_ANNO_FILES_LIST     = [os.path.join(firrtl_build_dir, "e31.anno.json"),
+                                    os.path.join(verilog_build_dir, "e31.cmdline.anno.json")]
     JAVA                        = "/usr/bin/java "
     FIRRTL_MAX_HEAP             = "20G"
     FIRRTL_MAX_STACK            = "8M"
     FIRRTL_MAIN                 = "firrtl.Driver"
-    MODEL                       = "CoreIPSubsystemAmbaAllPortRAMTestHarness"
+    MODEL                       = "CoreIPSubsystemAllPortRAMTestHarness"
     verilog_build_conf          = os.path.join(verilog_build_dir, \
-                                    "CoreIPSubsystemAmbaAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf")
+                                    "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf")
     FIRRTL                      = JAVA + "-Xmx" + FIRRTL_MAX_HEAP + " -Xss" + \
                                     FIRRTL_MAX_STACK +  " -cp " + federation_jar + " " + FIRRTL_MAIN
     VERILOG_FIRRTL_ARGS         = "--infer-rw" + " " + MODEL + " "\
                                   "--repl-seq-mem -c:" + MODEL + ":-o:" + verilog_build_conf + " " +\
-                                  "--split-modules -tn" + MODEL + " " +\
+                                  "--split-modules -tn " + MODEL + " " +\
                                   "-td " + verilog_build_design_dir + " "  + \
-                                  "-fct" + ",".join(FIRRTL_TRANSFORMS) + " " + \
-                                  " -faf " + " -faf ".join(fedr_CMDLINE_ANNO_FILE) + " -ll info "
+                                  "-fct " + ",".join(FIRRTL_TRANSFORMS) + " " + \
+                                  " -faf " + " -faf ".join(VERILOG_ANNO_FILES_LIST) + " -ll info "
     FIRRTL_CMDLINE              = FIRRTL + " -i " + os.path.join(firrtl_build_dir, "e31.pb") + \
                                     " -X verilog " + VERILOG_FIRRTL_ARGS
     os.system(FIRRTL_CMDLINE) #ACTION
+    print(FIRRTL_CMDLINE)
 #==============================================================================================
 
-    e31_vsrcs_F         = os.path.join(verilog_build_dir, \
-                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.vsrcs.F")
-    e31_F               = os.path.join(verilog_build_dir, \
-                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.F")
+    wake_verilog_design_folder   = os.path.join(wake_build, "verilog", "design", "*")
+    wake_verilog_testbn_folder   = os.path.join(wake_build, "verilog", "testbench", "*")
+    os.makedirs(verilog_build_design_dir)
+    os.makedirs(verilog_build_testbn_dir)
+    os.system("cp -r " + wake_verilog_design_folder + " " + verilog_build_design_dir)
+    os.system("cp -r " + wake_verilog_testbn_folder + " " + verilog_build_testbn_dir)
+
+
+    e31_vsrcs_F             = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.vsrcs.F")
+    e31_F                   = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.F")
+    e31_vsrcs_testbn_F      = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.testbench.vsrcs.F")
+    e31_testbn_F            = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.testbench.F")
+
+
+
     os.system("touch " + e31_vsrcs_F)
+    os.system("touch " + e31_vsrcs_testbn_F)
     os.system("touch " + e31_F)
+    os.system("touch " + e31_testbn_F)
 
     create_F_file(verilog_build_design_dir, "", e31_vsrcs_F)
+    create_F_file(verilog_build_testbn_dir, "", e31_vsrcs_testbn_F)
     create_F_file(verilog_build_design_dir, "", e31_F)
+    create_F_file(verilog_build_testbn_dir, "", e31_testbn_F)
 
     #VROOM
     #create verif/libraries/design_info c, sv, tcl
@@ -369,32 +403,42 @@ def main():
         #realMemGen
     INTERACTIVE                     = False
     MEMORY_COMPILER_SIZE_THRESHOLD  = str(0)
-    PREPEND_MEMORY_WRAPPER          = False #CHECKME
-    APPEND_MEMORY_WRAPPER           = False #CHECKME
-    MEMORY_MODULE_SKIP_LIST         = False #CHECKME
+    #PREPEND_MEMORY_WRAPPER          = False #CHECKME
+    #APPEND_MEMORY_WRAPPER           = False #CHECKME
+    #MEMORY_MODULE_SKIP_LIST         = False #CHECKME
     memgen_build_rams_v             = os.path.join(memgen_build_dir, "e31.rams.v")
     memgen_conf_json                = os.path.join(federation_root, "vlsi-mem", "mem_gen_config.json")
     memgen_build_memalpha_meta      = os.path.join(memgen_build_dir, "e31.memalpha.json")
-    MEM_GEN                         = os.path.join(federation_root, "vlsi-mem/vlsi_mem_gen.tsmc")
+    MEM_GEN                         = os.path.join(federation_root, "vlsi-mem/vlsi_mem_gen.behavioral-DPI")
     interactive                     = " --interactive " if INTERACTIVE is True else  " "
     compiler_size                   = " --compiler-size-threshold " + MEMORY_COMPILER_SIZE_THRESHOLD
     iconf                           = " --iconf " + verilog_build_conf
     param_json                      = " --param_json " + memgen_conf_json
     oconf                           = " --oconf " + memgen_build_memalpha_meta
     wrper                           = " --wrapper " + memgen_build_rams_v
-    prepend_mem                     = (" --prepend-verilog-source " + PREPEND_MEMORY_WRAPPER) if \
-                                    PREPEND_MEMORY_WRAPPER is True else " "
-    appned_mem                      = (" --append-verilog-source " + APPEND_MEMORY_WRAPPER ) if \
-                                    APPEND_MEMORY_WRAPPER is True  else " "
-    module_skip_list                = (" --skip-list" + MEMORY_MODULE_SKIP_LIST) if \
-                                    MEMORY_MODULE_SKIP_LIST is True else " "
+    #prepend_mem                     = (" --prepend-verilog-source " + PREPEND_MEMORY_WRAPPER) if \
+    #                                    PREPEND_MEMORY_WRAPPER is True else " "
+    #appned_mem                      = (" --append-verilog-source " + APPEND_MEMORY_WRAPPER ) if \
+    #                                    APPEND_MEMORY_WRAPPER is True  else " "
+    #module_skip_list                = (" --skip-list" + MEMORY_MODULE_SKIP_LIST) if \
+    #                                    MEMORY_MODULE_SKIP_LIST is True else " "
     full_cmd                        =\
-                                    MEM_GEN + interactive + compiler_size + iconf + param_json + \
-                                    oconf + wrper + prepend_mem + module_skip_list + appned_mem + \
-                                    module_skip_list
+                                        MEM_GEN + interactive + compiler_size + iconf + param_json + \
+                                        oconf + wrper
     os.system(full_cmd)
 
 
+
+    #memgen_build_rams_json
+    memgen_build_rams_json          = os.path.join(memgen_build_dir, "e31.rams.json")
+    MEMALPHA                        = os.path.join(federation_root, "memory-alpha", "bin", "memalpha")
+    memgen_macro_dir                = "/work/memory/staging"
+    cmdline                         = MEMALPHA \
+                                        + " sitest -d " + memgen_macro_dir \
+                                        + " --vlib " + memgen_build_rams_v \
+                                        + " " + memgen_build_rams_json \
+                                        + " < " + memgen_build_memalpha_meta
+    os.system(cmdline)
 
 
     #verif_dir_built
@@ -404,7 +448,7 @@ def main():
     INPUT_CONFIG                    = os.path.join(federation_root, "configs", "e31.yml")
     BUILD_ELABORATED_CONFIG_JSON    = os.path.join(federation_root, "scripts", "build-elaborated-config-json.py")
     #I'm missing one line for the following cmd, but in this case it doesn't matter
-    BUILD_cmd                       = "BUILD_ELABORATED_CONFIG_JSON" +" --dts-json " + firrtl_build_dts_json + " " + \
+    BUILD_cmd                       = BUILD_ELABORATED_CONFIG_JSON +" --dts-json " + firrtl_build_dts_json + " " + \
                                         test_mem_partial_cmd + " " + \
                                         "--input-config=" + INPUT_CONFIG + \
                                         " --output " + os.path.join(firrtl_build_dir, "elaborated_config.json")
@@ -434,7 +478,7 @@ def main():
     cmdline                     = toolchain_build_toolchain     + " "\
                                     "--extra-input-config "     + TOOLCHAIN_CONFIG + " " \
                                     "--iof-input-config "       + firrtl_build_iof_json + " "\
-                                    "--elaborated-config-json"  + firrtl_build_elaborated_config_json + " " \
+                                    "--elaborated-config-json " + firrtl_build_elaborated_config_json + " " \
                                     "-o "                       + toolchain_build_dir
     os.system(cmdline)
 
