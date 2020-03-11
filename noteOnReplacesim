@@ -1,0 +1,17 @@
+
+
+
+
+
+
+
+
+file_index.json was too tedious to generate
+
+build/coreip_e31/sim is copied from some existing folder
+    *rtl.json need some modification for sitest to work
+
+    *config.sitest, I don't yet understand how it works, hard to gen it without error.
+    when there is error, I don't know how to debug
+
+    *./sitest somehow won't work need inspection
