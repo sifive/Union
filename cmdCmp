@@ -1,0 +1,34 @@
+firrtl.jar:
+
+    federation: java <-- build.sbt
+
+    wit/wake:   bloop_wake <-- bunch of scala
+
+
+
+federation.jar:
+
+    federation: java <-- build.sbt
+
+    wit/wake:   bloop_wake <-- bunch of scala
+
+
+.v files:
+
+    federation: java(firrtl_cmdline)
+
+    wit/wake:   java
+
+    note:       the -cp, classpath is very different
+
+
+cmdline.anno.json
+
+    federation: direct output
+
+    wit/wake:   direct output
+
+
+
+
+
