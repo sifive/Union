@@ -198,30 +198,6 @@ def gen_file_index(metadata_build_dir):
     f.write("}")
     f.close()
 
-def do_firrtl_jar(mkdir, cd, cpTarget, cpDest):
-    JAVA = "/usr/bin/java"
-    SBT = JAVA + " -Xmx6G -Xss8M -XX:MaxPermSize=256M -jar " + rocketchip_root + "/sbt-launch.jar"
-    os.makedirs(mkdir)
-    print("====================================================================")
-    os.chdir(cd)
-    print(os.getcwd())
-
-    os.system(SBT + " assembly")
-    print(SBT + " assembly")
-    print("====================================================================")
-    os.system("cp " + cpTarget + " " + cpDest)
-    #os.chdir("OLDCWD")
-
-def do_federation_jar(mkdir, cd):
-    JAVA = "/usr/bin/java"
-    SBT = JAVA + " -Xmx6G -Xss8M -XX:MaxPermSize=256M -jar " + rocketchip_root + "/sbt-launch.jar"
-    print("===================================================================")
-    os.chdir(cd)
-    print("cd " + cd)
-    print("===================================================================")
-    os.system(SBT + " assembly")
-    #os.chdir("OLDCWD")
-
 
 def create_F_file(reference_folder, file_type, F_file_dir):
     srcs = []
@@ -273,7 +249,7 @@ def main():
     cd          = firrtl_tool_src_root
     cpTarget    = os.path.join(firrtl_tool_src_root, "utils", "bin", "firrtl.jar")
     cpDest      = firrtl_jar
-    do_firrtl_jar(mkdir, cd, cpTarget, cpDest) #ACTION
+    #do_firrtl_jar(mkdir, cd, cpTarget, cpDest) #ACTION
 
 
     #Input:     build.sbt
@@ -281,7 +257,7 @@ def main():
     federation_jar  = os.path.join(federation_root, "builds", "federation.jar")
     mkdir           = os.path.dirname(federation_jar) #get dir
     cd              = federation_root
-    do_federation_jar(mkdir, cd) #ACTION
+    #do_federation_jar(mkdir, cd) #ACTION
 
 
     #Wit/Wake/:firrtl           -->   build/coreip/firrtl
@@ -291,6 +267,11 @@ def main():
     #Wit/Wake:e31.sitest        -->   build/coreip/verilog
     wake_sitest = os.path.join(wake_build, "verilog", "e31.sitest")
     os.system("cp " + wake_sitest + " " + verilog_build_dir)
+
+    #Wit/Wake: e31.testbench.sitest --> build/coreip/verilog
+    wake_testbn_sitest = os.path.join(wake_build, "verilog", "e31.testbench.sitest")
+    os.system("cp " + wake_testbn_sitest + " " + verilog_build_dir)
+
 
 
 #==========================================================================================
@@ -327,12 +308,16 @@ def main():
                                     " -X verilog " + VERILOG_FIRRTL_ARGS
         #Input:     e31.cmdline.anno.json
         #Output:    CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf && .V files
-    os.system(FIRRTL_CMDLINE) #ACTION
+    #os.system(FIRRTL_CMDLINE) #ACTION
     print(FIRRTL_CMDLINE)
 #==============================================================================================
 
     wake_verilog_design_folder   = os.path.join(wake_build, "verilog", "design", "*")
     wake_verilog_testbn_folder   = os.path.join(wake_build, "verilog", "testbench", "*")
+    wake_firrtl_memcon_file      = os.path.join(wake_build, "firrtl",  "mems.conf")
+    verilog_build_dir_conf       = os.path.join(verilog_build_dir, \
+                                    "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf")
+
     os.makedirs(verilog_build_design_dir)
     os.makedirs(verilog_build_testbn_dir)
     #Wit/Wake: verilog/design       -->         build/coreip/verilog/CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations
@@ -340,6 +325,7 @@ def main():
     #Wit/Wake: verilog/testbench    -->         build/coreip/verilog/CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.testbench
     os.system("cp -r " + wake_verilog_testbn_folder + " " + verilog_build_testbn_dir)
 
+    os.system("cp -r " + wake_firrtl_memcon_file + " " + verilog_build_dir_conf)
 
     e31_vsrcs_F             = os.path.join(verilog_build_dir, \
                                 "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.vsrcs.F")
