@@ -13,7 +13,7 @@ keyword_list = [
         "addprefix", "join", "realpath", "abspath", "shell", \
         "origin", "foreach", "if", "then", "else", "for", "do", "in", \
         "done", "$@", "$<", "$?", "$(", "(", ")", ":", ".PHONY", "\\", \
-        "{", "}", "\t", "echo", "@echo"
+        "{", "}", "\t", "echo", "@echo", "/"
 ]
 
 keyword_dict = {
@@ -71,6 +71,7 @@ keyword_dict = {
         "\t"        : "TAB",
         "echo"      : "ECHO",
         "@echo"     : "ECHO",
+        "/"         : "SLASH",
 }
 
 
@@ -110,18 +111,26 @@ class content_type():
         self.content = content
         self.keyword = keyword
 
+    def __str__(self):
+        return self.keyword + " " + self.content
 
 class matcher():
     def __init__(self):
         self.isStringStart  = False
-        self.isStringEnd    = True
+        self.isStringEnd    = False
         self.consumeCnt     = 0
         self.buffer         = ""
         self.shouldEval     = False
 
-    def consume(string):
-        if self.consumeCnt >= len(string): return True
-        self.buffer.append(string[self.consumeCnt])
+    def consume(self, string):
+        if self.consumeCnt >= len(string)-1:
+            return True
+        if string[self.consumeCnt] is not "\"" and \
+                string[self.consumeCnt] is not " " and \
+                string[self.consumeCnt] is not "\'" and \
+                string[self.consumeCnt] is not "\n" and \
+                string[self.consumeCnt] is not "\t":
+            self.buffer += string[self.consumeCnt]
         self.consumeCnt = self.consumeCnt + 1
 
         if string[self.consumeCnt]   == "\"" and self.isStringStart is False:
@@ -135,12 +144,15 @@ class matcher():
             self.shouldEval     = True
         elif string[self.consumeCnt] == "\n":
             self.shouldEval     = True
+        elif string[self.consumeCnt] == ")":
+            self.shouldEval     = True
         return False
 
 
-    def eval():
+    def eval(self):
         if self.isStringEnd is True:
             self.isStringStart  = False
+            self.isStringEnd    = False
             rtn_val             = self.buffer
             self.buffer         = ""
             return "STRING", rtn_val
@@ -154,8 +166,11 @@ class matcher():
 
             else:
                 rtn_val     = self.buffer
-                self.buffer = ""
-                return "VARIABLE", rtn_val
+                if self.buffer.endswith(")"):
+                    self.buffer = ")"
+                else:
+                    self.buffer = ""
+                return "VARIABLE", rtn_val.rstrip(")")
 
         elif self.buffer in keyword_list:
                 rtn_val     = self.buffer
@@ -186,7 +201,7 @@ def tokenize(file_content):
     return tokens
 
 
-def syntax_analyze(tokens):
+#def syntax_analyze(tokens):
 
 
 
@@ -197,9 +212,10 @@ def main():
     file_content    = input_file.readlines()
     file_content_nc = stripComment(file_content)
     tokens          = tokenize(file_content_nc)
-    syntax_tree     = syntax_analyze(tokens)
-    output_python(syntax_tree)
-
+    #syntax_tree     = syntax_analyze(tokens)
+    #output_python(syntax_tree)
+    for t in tokens:
+        print(t)
 
 
 
