@@ -121,6 +121,7 @@ class matcher():
         self.consumeCnt     = 0
         self.buffer         = ""
         self.shouldEval     = False
+        self.forFollowedByE = False
 
     def consume(self, string):
         if self.consumeCnt >= len(string)-1:
@@ -146,6 +147,10 @@ class matcher():
             self.shouldEval     = True
         elif string[self.consumeCnt] == ")":
             self.shouldEval     = True
+        if self.buffer == "for" and string[self.consumeCnt] == 'e':
+            self.forFollowedByE = True
+        else:
+            self.forFollowedByE = False
         return False
 
 
@@ -157,7 +162,7 @@ class matcher():
             self.buffer         = ""
             return "STRING", rtn_val
 
-        elif self.shouldEval is True:
+        elif self.shouldEval is True and self.forFollowedByE is False:
             self.shouldEval     = False
             if self.buffer in keyword_list:
                 rtn_val     = self.buffer
@@ -172,7 +177,7 @@ class matcher():
                     self.buffer = ""
                 return "VARIABLE", rtn_val.rstrip(")")
 
-        elif self.buffer in keyword_list:
+        elif self.buffer in keyword_list and self.forFollowedByE is False:
                 rtn_val     = self.buffer
                 self.buffer = ""
                 return keyword_dict[rtn_val], rtn_val
