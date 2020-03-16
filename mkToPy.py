@@ -147,6 +147,8 @@ class matcher():
             self.shouldEval     = True
         elif string[self.consumeCnt] == ")":
             self.shouldEval     = True
+        elif string[self.consumeCnt] == ":":
+            self.shouldEval     = True
         if self.buffer == "for" and string[self.consumeCnt] == 'e':
             self.forFollowedByE = True
         else:
@@ -171,11 +173,15 @@ class matcher():
 
             else:
                 rtn_val     = self.buffer
+                if self.buffer == "":
+                    return None, ""
                 if self.buffer.endswith(")"):
                     self.buffer = ")"
+                elif self.buffer.endswith(":"):
+                    self.buffer = ":"
                 else:
                     self.buffer = ""
-                return "VARIABLE", rtn_val.rstrip(")")
+                return "VARIABLE", rtn_val.rstrip("):")
 
         elif self.buffer in keyword_list and self.forFollowedByE is False:
                 rtn_val     = self.buffer
