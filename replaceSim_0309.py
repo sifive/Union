@@ -227,7 +227,7 @@ def main():
 
     wake_build, federation_root = sys.argv[1], sys.argv[2]
 
-    build_dir               = os.path.join(federation_root, "builds", "coreip_e31_ahb_try")
+    build_dir               = os.path.join(federation_root, "builds", "coreip_e31_fcd_try")
     metadata_build_dir      = os.path.join(build_dir, "metadata")
     rocketchip_root         = os.path.join(federation_root, "rocket-chip")
     firrtl_tool_src_root    = os.path.join(rocketchip_root, "firrtl")
@@ -239,8 +239,13 @@ def main():
     #copy file_index.json --> builds/coreip_e31/metadata/
     os.makedirs(metadata_build_dir)
     os.makedirs(verilog_build_dir)
-    os.system("cp " + os.path.join("..", "golden_federation_build", "builds", "coreip_e31_fcd", "metadata", "file_index.json") + " " + metadata_build_dir)
+    original_file_index = os.path.join(federation_root, "builds", "coreip_e31_fcd", "metadata", "file_index.json")
+    os.system("cp " + original_file_index + " " + metadata_build_dir)
     #gen_file_index(metadata_build_dir) #ACTION
+
+    #copy builds/coreip_e31_fcd/sim -->builds/coreip_e31_fcd_try/
+    original_sim_folder = os.path.join(federation_root, "builds", "coreip_e31_fcd", "sim")
+    os.system("cp -r " + original_sim_folder + " " + build_dir)
 
 
     #Input:     build.sbt
