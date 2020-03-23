@@ -224,10 +224,15 @@ def main():
     global verilog_build_conf
     global memgen_build_dir
 
+    wake_build      = ""
+    federation_root = ""
+    core_name       = "e31" #if not otherwise specify
+    if   len(sys.argv) == 3:
+            wake_build, federation_root = sys.argv[1], sys.argv[2]
+    elif len(sys.argv) == 4:
+            wake_build, federation_root, core_name = sys.argv[1], sys.argv[2], sys.argv[3]
 
-    wake_build, federation_root = sys.argv[1], sys.argv[2]
-
-    build_dir               = os.path.join(federation_root, "builds", "coreip_e31_fcd_try")
+    build_dir               = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd_try")
     metadata_build_dir      = os.path.join(build_dir, "metadata")
     rocketchip_root         = os.path.join(federation_root, "rocket-chip")
     firrtl_tool_src_root    = os.path.join(rocketchip_root, "firrtl")
@@ -239,12 +244,12 @@ def main():
     #copy file_index.json --> builds/coreip_e31/metadata/
     os.makedirs(metadata_build_dir)
     os.makedirs(verilog_build_dir)
-    original_file_index = os.path.join(federation_root, "builds", "coreip_e31_fcd", "metadata", "file_index.json")
+    original_file_index = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd", "metadata", "file_index.json")
     os.system("cp " + original_file_index + " " + metadata_build_dir)
     #gen_file_index(metadata_build_dir) #ACTION
 
     #copy builds/coreip_e31_fcd/sim -->builds/coreip_e31_fcd_try/
-    original_sim_folder = os.path.join(federation_root, "builds", "coreip_e31_fcd", "sim")
+    original_sim_folder = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd", "sim")
     os.system("cp -r " + original_sim_folder + " " + build_dir)
 
 
@@ -274,7 +279,7 @@ def main():
     os.system("cp " + wake_sitest + " " + verilog_build_dir)
 
     #Wit/Wake: e31.testbench.sitest --> build/coreip/verilog
-    wake_testbn_sitest = os.path.join(wake_build, "verilog", "e31.testbench.sitest")
+    wake_testbn_sitest = os.path.join(wake_build, "verilog", core_name + ".testbench.sitest")
     os.system("cp " + wake_testbn_sitest + " " + verilog_build_dir)
 
 
@@ -286,14 +291,14 @@ def main():
     os.system("cp -r " + wake_metadata + " " + metadata_build_dir)
 
     #FIRRTL cmd
-    wake_CMDLINE_ANNO_FILE      = os.path.join(wake_build, "firrtl", "e31.cmdline.anno.json")
-    fedr_CMDLINE_ANNO_FILE      = os.path.join(verilog_build_dir, "e31.cmdline.anno.json")
+    wake_CMDLINE_ANNO_FILE      = os.path.join(wake_build, "firrtl", core_name + ".cmdline.anno.json")
+    fedr_CMDLINE_ANNO_FILE      = os.path.join(verilog_build_dir, core_name + ".cmdline.anno.json")
         #Wit/Wake:firrtl/e31.cmdline.anno.json      -->     build/verilog/e31.cmdline.anno.json
     os.system("cp " + wake_CMDLINE_ANNO_FILE + " " + fedr_CMDLINE_ANNO_FILE)
     verilog_build_design_dir    = os.path.join(verilog_build_dir, "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations") #NOTICEME
     verilog_build_testbn_dir    = os.path.join(verilog_build_dir, "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.testbench") #NOTICEME
-    VERILOG_ANNO_FILES_LIST     = [os.path.join(firrtl_build_dir, "e31.anno.json"),
-                                    os.path.join(verilog_build_dir, "e31.cmdline.anno.json")]
+    VERILOG_ANNO_FILES_LIST     = [os.path.join(firrtl_build_dir, core_name + ".anno.json"),
+                                    os.path.join(verilog_build_dir, core_name + ".cmdline.anno.json")]
     JAVA                        = "/usr/bin/java "
     FIRRTL_MAX_HEAP             = "20G"
     FIRRTL_MAX_STACK            = "8M"
@@ -332,21 +337,21 @@ def main():
 
     os.system("cp -r " + wake_firrtl_memcon_file + " " + verilog_build_dir_conf)
 
-    e31_vsrcs_F             = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.vsrcs.F")
-    e31_F                   = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.F")
-    e31_vsrcs_testbn_F      = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.testbench.vsrcs.F")
-    e31_testbn_F            = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.testbench.F")
+    _vsrcs_F             = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".vsrcs.F")
+    _F                   = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".F")
+    _vsrcs_testbn_F      = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.vsrcs.F")
+    _testbn_F            = os.path.join(verilog_build_dir, \
+                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.F")
 
 
 
-    os.system("touch " + e31_vsrcs_F)
-    os.system("touch " + e31_vsrcs_testbn_F)
-    os.system("touch " + e31_F)
-    os.system("touch " + e31_testbn_F)
+    os.system("touch " + _vsrcs_F)
+    os.system("touch " + _vsrcs_testbn_F)
+    os.system("touch " + _F)
+    os.system("touch " + _testbn_F)
 
     #Input:     build/coreip/verilog/CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations/.v
     #Input:     build/coreip/verilog/CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.testbench/.v
@@ -355,10 +360,10 @@ def main():
     #Output:    build/coreip/verilog/CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.F
     #Output:    build/coreip/verilog/CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.testbench.vsrcs.F
     #Output:    build/coreip/verilog/CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31.testbench.F
-    create_F_file(verilog_build_design_dir, "", e31_vsrcs_F)
-    create_F_file(verilog_build_testbn_dir, "", e31_vsrcs_testbn_F)
-    create_F_file(verilog_build_design_dir, "", e31_F)
-    create_F_file(verilog_build_testbn_dir, "", e31_testbn_F)
+    create_F_file(verilog_build_design_dir, "", _vsrcs_F)
+    create_F_file(verilog_build_testbn_dir, "", _vsrcs_testbn_F)
+    create_F_file(verilog_build_design_dir, "", _F)
+    create_F_file(verilog_build_testbn_dir, "", _testbn_F)
 
     #VROOM
     #create verif/libraries/design_info c, sv, tcl
@@ -381,14 +386,14 @@ def main():
     #Output:    build/coreip/verif/libraries/design_info/tcl/*
     vroom_sram_info_arg     = "" #FIXME
     vroom_exe               = os.path.join(federation_root, "scripts", "vroom", "vroom.py")
-    e31_object_model        = os.path.join(firrtl_build_dir, "e31.objectModel.json")
-    test_mem_1              = os.path.join(firrtl_build_dir, "e31.AHBPortRAMSlave_AddressMap_1.json")
-    test_mem_2              = os.path.join(firrtl_build_dir, "e31.AHBPortRAMSlave_AddressMap_2.json")
+    _object_model        = os.path.join(firrtl_build_dir, core_name + ".objectModel.json")
+    test_mem_1              = os.path.join(firrtl_build_dir, core_name + ".AHBPortRAMSlave_AddressMap_1.json")
+    test_mem_2              = os.path.join(firrtl_build_dir, core_name + ".AHBPortRAMSlave_AddressMap_2.json")
     c_partial_cmd           = " --gen-c --ovrd-c-out-dir=" + verif_libraries_design_info_c + " " + vroom_sram_info_arg
     sv_partial_cmd          = " --gen-sv --ovrd-sv-out-file=" + verif_libraries_design_info_sv + "/sifive_amba_system_config.sv"
     tcl_partial_cmd         = " --gen-tcl --ovrd-tcl-out-file=" + verif_libraries_design_info_tcl + "/ominfo.tcl"
     test_mem_partial_cmd    = " --test-memory-json " + test_mem_1 + " --test-memory-json " + test_mem_2
-    full_vroom_cmd          = vroom_exe + " " + e31_object_model + c_partial_cmd \
+    full_vroom_cmd          = vroom_exe + " " + _object_model + c_partial_cmd \
                             + sv_partial_cmd + tcl_partial_cmd + test_mem_partial_cmd
     os.system(full_vroom_cmd)
     print(full_vroom_cmd)
@@ -443,9 +448,9 @@ def main():
     #PREPEND_MEMORY_WRAPPER          = False #CHECKME
     #APPEND_MEMORY_WRAPPER           = False #CHECKME
     #MEMORY_MODULE_SKIP_LIST         = False #CHECKME
-    memgen_build_rams_v             = os.path.join(memgen_build_dir, "e31.rams.v")
+    memgen_build_rams_v             = os.path.join(memgen_build_dir, core_name + ".rams.v")
     memgen_conf_json                = os.path.join(federation_root, "vlsi-mem", "mem_gen_config.json")
-    memgen_build_memalpha_meta      = os.path.join(memgen_build_dir, "e31.memalpha.json")
+    memgen_build_memalpha_meta      = os.path.join(memgen_build_dir, core_name + ".memalpha.json")
     MEM_GEN                         = os.path.join(federation_root, "vlsi-mem/vlsi_mem_gen.behavioral-DPI")
     interactive                     = " --interactive " if INTERACTIVE is True else  " "
     compiler_size                   = " --compiler-size-threshold " + MEMORY_COMPILER_SIZE_THRESHOLD
@@ -470,7 +475,7 @@ def main():
     #Input:     build/coreip/memgen/e31.memalpha.json
 
     #Output:    build/coreip/memgen/e31.rams.json
-    memgen_build_rams_json          = os.path.join(memgen_build_dir, "e31.rams.json")
+    memgen_build_rams_json          = os.path.join(memgen_build_dir, core_name + ".rams.json")
     MEMALPHA                        = os.path.join(federation_root, "memory-alpha", "bin", "memalpha")
     memgen_macro_dir                = "/work/memory/staging"
     cmdline                         = MEMALPHA \
@@ -489,9 +494,9 @@ def main():
 
     #Output:    build/coreip/firrtl/elaborated_config.json
     firrtl_build_elaborated_config_json = os.path.join(firrtl_build_dir, "elaborated_config.json")
-    firrtl_build_dts_json           = os.path.join(firrtl_build_dir, "e31.json")#NOTICEME
+    firrtl_build_dts_json           = os.path.join(firrtl_build_dir, core_name + ".json") #NOTICEME
     test_mem_partial_cmd            = " --test-memory-json " + test_mem_1 + " --test-memory-json " + test_mem_2
-    INPUT_CONFIG                    = os.path.join(federation_root, "configs", "e31.yml")
+    INPUT_CONFIG                    = os.path.join(federation_root, "configs", core_name + ".yml")
     BUILD_ELABORATED_CONFIG_JSON    = os.path.join(federation_root, "scripts", "build-elaborated-config-json.py")
     #I'm missing one line for the following cmd, but in this case it doesn't matter
     BUILD_cmd                       = BUILD_ELABORATED_CONFIG_JSON +" --dts-json " + firrtl_build_dts_json + " " + \
@@ -525,8 +530,8 @@ def main():
     software_dir                = os.path.join(federation_root, "software")
     software_toolchain_dir      = os.path.join(software_dir, "toolchain")
     toolchain_build_toolchain   = os.path.join(software_toolchain_dir, "build_toolchain.py")
-    TOOLCHAIN_CONFIG            = os.path.join(software_dir, "configs", "coreip_e3.json")
-    firrtl_build_iof_json       = os.path.join(firrtl_build_dir, "e31.iof.json")
+    TOOLCHAIN_CONFIG            = os.path.join(software_dir, "configs", "coreip_e3.json") #FIXME, not always coreip_e3.json
+    firrtl_build_iof_json       = os.path.join(firrtl_build_dir, core_name".iof.json")
     toolchain_build_dir         = os.path.join(build_dir, "software", "toolchain")
 
     cmdline                     = toolchain_build_toolchain     + " "\
