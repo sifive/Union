@@ -119,26 +119,25 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
     formattedStr("sram_info_json_dir",              sram_info_json)
 
 
-def file_index_json_contents_middle():
-    software_build_software_compilation_config  = os.path.join(software_mybuild, "software", "compilation_config.json")
-    software_bootloaders_dir                    = os.path.join(software_mybuild, "bootloader")
-    software_dir                                = software_mybuild
-    software_env_dir                            = os.path.join(software_mybuild, "env")
-    software_test_dir                           = os.path.join(software_mybuild, "tests")
+def file_index_json_contents_middle(software_build_dir):
+    software_build_software_compilation_config  = os.path.join(software_build_dir, "software", "compilation_config.json")
+    software_bootloaders_dir                    = os.path.join(software_build_dir, "bootloader")
+    software_env_dir                            = os.path.join(software_build_dir, "env")
+    software_test_dir                           = os.path.join(software_build_dir, "tests")
     TOOLCHAIN_CONFIG                            = os.path.join(federation_root, "software", "configs", "coreip_e3.json")
-    toolchain_build_include_dir                 = os.path.join(software_mybuild, "toolchain", "include")
-    toolchain_build_linker_dir                  = os.path.join(software_mybuild, "toolchain", "linker")
+    toolchain_build_include_dir                 = os.path.join(software_build_dir, "toolchain", "include")
+    toolchain_build_linker_dir                  = os.path.join(software_build_dir, "toolchain", "linker")
 
     return \
-    formattedStr("software_compilation_config_json", software_build_software_compilation_config)+\
-    formattedStr("software_bootloaders_dir", software_bootloaders_dir) + \
-    formattedStr("software_dir", software_dir) + \
-    formattedStr("software_test_envs_dir", software_env_dir) + \
-    formattedStr("software_test_crt", software_test_dir + "/common/crt.S") + \
-    formattedStr("software_test_dir", software_test_dir) + \
-    formattedStr("toolchain_config", TOOLCHAIN_CONFIG) + \
-    formattedStr("toolchain_include_dir", toolchain_build_include_dir) + \
-    formattedStr("toolchain_linker_script_dir", toolchain_build_linker_dir)
+    formattedStr("software_compilation_config_json",    software_build_software_compilation_config)+\
+    formattedStr("software_bootloaders_dir",            software_bootloaders_dir) + \
+    formattedStr("software_dir",                        software_build_dir) + \
+    formattedStr("software_test_envs_dir",              software_env_dir) + \
+    formattedStr("software_test_crt",                   software_test_dir + "/common/crt.S") + \
+    formattedStr("software_test_dir",                   software_test_dir) + \
+    formattedStr("toolchain_config",                    TOOLCHAIN_CONFIG) + \
+    formattedStr("toolchain_include_dir",               toolchain_build_include_dir) + \
+    formattedStr("toolchain_linker_script_dir",         toolchain_build_linker_dir)
 
 #MISSING FPGA PART!!!!!!!!
 #NEED TO MIGRATE FROM BASE.MK
@@ -191,7 +190,8 @@ def gen_file_index(\
         verif_libraries_design_info_c,\
         verif_libraries_build_dir,\
         metadata_build_dir,\
-        sim_build_dir):
+        sim_build_dir,\
+        software_build_dir):
 
     file_index_json = os.path.join(metadata_build_dir, "file_index_try.json")
 
@@ -210,7 +210,7 @@ def gen_file_index(\
             sim_build_dir
                     )    + "\n")
 
-    #f.write(file_index_json_contents_middle() + "\n")
+    f.write(file_index_json_contents_middle(software_build_dir) + "\n")
     #f.write(file_index_json_contents_bottom() + "\n")
     f.write("}")
     f.close()
@@ -317,7 +317,8 @@ def main():
             verif_libraries_design_info_c,\
             verif_libraries_build_dir,\
             metadata_build_dir,\
-            sim_build_dir) #ACTION
+            sim_build_dir,\
+            software_build_dir) #ACTION
 
     #copy builds/coreip_e31_fcd/sim -->builds/coreip_e31_fcd_try/
     original_sim_folder = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd", "sim")
