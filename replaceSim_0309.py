@@ -49,7 +49,7 @@ FIRRTL_TRANSFORMS    = [\
 
 
 def formattedStr(first, second):
-    return "\"" + first + "\": " + "\"" + second + "\",\n"
+    return "\t\"" + first + "\": " + "\"" + second + "\",\n"
 
 
 def file_index_json_contents_top(federation_root, software_scripts_dir, \
@@ -57,12 +57,12 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
         ,verif_libraries_design_info_c, verif_libraries_build_dir\
         ,metadata_build_dir, sim_build_dir): \
 
+    CONFIG                  = "SiFiveCoreDesignerAlterations" #CHECKME
     software_scripts_dir    = os.path.join(federation_root, "software", "scripts")
     CREATE_GPT              = os.path.join(software_scripts_dir, "create-gpt")
     MODEL                   = "e31"
-    CONFIG                  = "" #FIXME
     TB                      = "TestDriver"
-    design                  = MODEL + "." + CONFIG
+    design                  = "CoreIPSubsystemAmbaAllPortRAMTestHarness.SiFiveCoreDesignerAlterations"
     firrtl_build_dtb        = os.path.join(firrtl_build_dir, CONFIG+".dtb")
     firrtl_build_dts        = os.path.join(firrtl_build_dir, CONFIG+".dts")
     firrtl_build_dts_json   = os.path.join(firrtl_build_dir, CONFIG+".json")
@@ -113,10 +113,10 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
     formattedStr("sitest_json_dir",             federation_root + "/src/main/sitest") + \
     formattedStr("metadata_build_dir",          metadata_build_dir) + \
     formattedStr("deputy_dir",                  deputy_dir) + \
-    formattedStr("verif_libraries_design_info_tcl", verif_libraries_design_info_c) + \
+    formattedStr("verif_design_info_c_dir",         verif_libraries_design_info_c) + \
     formattedStr("verif_libraries_dir",             verif_libraries_build_dir) + \
     formattedStr("scripts_vroom_dir",               scripts_vroom_dir) + \
-    formattedStr("sram_info_json_dir",              sram_info_json)
+    formattedStr("sram_info_json",                  sram_info_json)
 
 
 def file_index_json_contents_middle(software_build_dir):
@@ -134,7 +134,7 @@ def file_index_json_contents_middle(software_build_dir):
     formattedStr("software_dir",                        software_build_dir) + \
     formattedStr("software_test_envs_dir",              software_env_dir) + \
     formattedStr("software_test_crt",                   software_test_dir + "/common/crt.S") + \
-    formattedStr("software_test_dir",                   software_test_dir) + \
+    formattedStr("software_tests_dir",                   software_test_dir) + \
     formattedStr("toolchain_config",                    TOOLCHAIN_CONFIG) + \
     formattedStr("toolchain_include_dir",               toolchain_build_include_dir) + \
     formattedStr("toolchain_linker_script_dir",         toolchain_build_linker_dir)
@@ -142,22 +142,21 @@ def file_index_json_contents_middle(software_build_dir):
 #MISSING FPGA PART!!!!!!!!
 #NEED TO MIGRATE FROM BASE.MK
 
-def file_index_json_contents_bottom():
-    #design = ""#FIXME
-    metadata_build_dir = metadata_mybuild
+def file_index_json_contents_bottom(metadata_build_dir, verilog_build_dir):
+    design = "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC.e31" #FIXME
 
     verilog_module_hier_json            = os.path.join(metadata_build_dir, "module_hierarchy.json")
     verilog_testharness_hier_json       = os.path.join(metadata_build_dir, "testharness_hier.json")
-    verilog_build_dir                   = verilog_mybuild
     verilog_build_design_dir            = os.path.join(verilog_build_dir, design)
     verilog_build_design_f              = os.path.join(verilog_build_dir, design+".F")
     verilog_design_vsrcs_f              = "" #FIXME
     verilog_build_assertions_vsrcs_f    = os.path.join(verilog_build_dir, design+".assertions.vsrcs.F")
     verilog_build_coverage_vsrcs_f      = os.path.join(verilog_build_dir, design+".coverage.vsrcs.F")
-    verilog_build_grandcentral_vsrcs_f = "" #FIXME
+    verilog_build_grandcentral_vsrcs_f  = "" #FIXME
     verilog_build_design_sitest         = os.path.join(verilog_build_dir, design+".sitest")
-    verilog_build_testbench_sitest     = "" #FIXME
+    verilog_build_testbench_sitest      = "" #FIXME
     verilog_testbench_f                 = ""#FIXME
+    package_build_json_dependencies     = ""
 
 
     return \
@@ -167,6 +166,9 @@ def file_index_json_contents_bottom():
     formattedStr("verilog_build_design_dir", verilog_build_design_dir) + \
     formattedStr("verilog_build_design_f", verilog_build_design_f) + \
     formattedStr("verilog_design_vsrcs_f", verilog_design_vsrcs_f) + \
+    formattedStr("verilog_build_testbench_dir", "") + \
+    formattedStr("verilog_build_testbench_f", "") + \
+    formattedStr("verilog_build_testbench_vsrcs_f", "") + \
     formattedStr("verilog_build_assertions_vsrcs_f", verilog_build_assertions_vsrcs_f) + \
     formattedStr("verilog_build_coverage_vsrcs_f", verilog_build_coverage_vsrcs_f) + \
     formattedStr("verilog_build_grandcentral_vsrcs_f", verilog_build_grandcentral_vsrcs_f) + \
@@ -191,12 +193,13 @@ def gen_file_index(\
         verif_libraries_build_dir,\
         metadata_build_dir,\
         sim_build_dir,\
-        software_build_dir):
+        software_build_dir,\
+        verilog_build_dir):
 
     file_index_json = os.path.join(metadata_build_dir, "file_index_try.json")
 
     f       = open(file_index_json, "w")
-    f.write("{")
+    f.write("{\n")
     f.write(file_index_json_contents_top(\
             federation_root,\
             software_scripts_dir,\
@@ -208,10 +211,10 @@ def gen_file_index(\
             verif_libraries_build_dir,\
             metadata_build_dir,\
             sim_build_dir
-                    )    + "\n")
+                ))
 
     f.write(file_index_json_contents_middle(software_build_dir) + "\n")
-    #f.write(file_index_json_contents_bottom() + "\n")
+    f.write(file_index_json_contents_bottom(metadata_build_dir, verilog_build_dir))
     f.write("}")
     f.close()
 
@@ -238,6 +241,7 @@ def main():
     elif len(sys.argv) == 4:
             wake_build, federation_root, core_name = sys.argv[1], sys.argv[2], sys.argv[3]
 
+#==========================================Path Setup========================================
     build_dir               = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd_try")
     metadata_build_dir      = os.path.join(build_dir, "metadata")
     rocketchip_root         = os.path.join(federation_root, "rocket-chip")
@@ -297,7 +301,7 @@ def main():
 
     package_build_dir   = ""
     sim_build_dir       = os.path.join(build_dir, "sim")
-
+#=============================================Path setup done======================================================
 
 
 
@@ -318,7 +322,8 @@ def main():
             verif_libraries_build_dir,\
             metadata_build_dir,\
             sim_build_dir,\
-            software_build_dir) #ACTION
+            software_build_dir,\
+            verilog_build_dir) #ACTION
 
     #copy builds/coreip_e31_fcd/sim -->builds/coreip_e31_fcd_try/
     original_sim_folder = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd", "sim")
