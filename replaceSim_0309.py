@@ -6,6 +6,7 @@
 
 import os
 import sys
+import subprocess
 
 federation_root         = ""
 wake_build              = ""
@@ -57,7 +58,7 @@ def file_index_json_contents_top(): \
 
     software_scripts_dir    = os.path.join(federation_root, "software", "scripts")
     CREATE_GPT              = os.path.join(software_scripts_dir, "create-gpt")
-    MODEL                   = "e31"
+    MODEL                   = core_name
     CONFIG                  = "" #FIXME
     design                  = MODEL + "." + CONFIG
     firrtl_build_dtb        = os.path.join(firrtl_build_dir, CONFIG+".dtb")
@@ -275,7 +276,7 @@ def main():
     os.system("cp -r " + wake_firrtl + " " + build_dir) #ACTION, since it's copied, could be wrong
 
     #Wit/Wake:e31.sitest        -->   build/coreip/verilog
-    wake_sitest = os.path.join(wake_build, "verilog", "e31.sitest")
+    wake_sitest = os.path.join(wake_build, "verilog", core_name + ".sitest")
     os.system("cp " + wake_sitest + " " + verilog_build_dir)
 
     #Wit/Wake: e31.testbench.sitest --> build/coreip/verilog
@@ -314,7 +315,7 @@ def main():
                                   "-td " + verilog_build_design_dir + " "  + \
                                   "-fct " + ",".join(FIRRTL_TRANSFORMS) + " " + \
                                   " -faf " + " -faf ".join(VERILOG_ANNO_FILES_LIST) + " -ll info "
-    FIRRTL_CMDLINE              = FIRRTL + " -i " + os.path.join(firrtl_build_dir, "e31.pb") + \
+    FIRRTL_CMDLINE              = FIRRTL + " -i " + os.path.join(firrtl_build_dir, core_name + ".pb") + \
                                     " -X verilog " + VERILOG_FIRRTL_ARGS
         #Input:     e31.cmdline.anno.json
         #Output:    CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf && .V files
@@ -386,13 +387,17 @@ def main():
     #Output:    build/coreip/verif/libraries/design_info/tcl/*
     vroom_sram_info_arg     = "" #FIXME
     vroom_exe               = os.path.join(federation_root, "scripts", "vroom", "vroom.py")
-    _object_model        = os.path.join(firrtl_build_dir, core_name + ".objectModel.json")
-    test_mem_1              = os.path.join(firrtl_build_dir, core_name + ".AHBPortRAMSlave_AddressMap_1.json")
-    test_mem_2              = os.path.join(firrtl_build_dir, core_name + ".AHBPortRAMSlave_AddressMap_2.json")
+    _object_model           = os.path.join(firrtl_build_dir, core_name + ".objectModel.json")
+    test_mem                = subprocess.check_output("cd " + firrtl_build_dir + " && find . | grep AHBPortRAMSlave_AddressMap"\
+                                , shell=True)
+
+    test_mem_arr            = test_mem.decode("utf-8").rstrip("\n").split("\n")
+    test_mem_absPath_arr    = map(lambda x: os.path.join(firrtl_build_dir, x), test_mem_arr)
+    test_mem_as_arg         = map(lambda x: " --test-memory-json " + x, test_mem_absPath_arr)
+    test_mem_partial_cmd    = " ".join(test_mem_as_arg)
     c_partial_cmd           = " --gen-c --ovrd-c-out-dir=" + verif_libraries_design_info_c + " " + vroom_sram_info_arg
     sv_partial_cmd          = " --gen-sv --ovrd-sv-out-file=" + verif_libraries_design_info_sv + "/sifive_amba_system_config.sv"
     tcl_partial_cmd         = " --gen-tcl --ovrd-tcl-out-file=" + verif_libraries_design_info_tcl + "/ominfo.tcl"
-    test_mem_partial_cmd    = " --test-memory-json " + test_mem_1 + " --test-memory-json " + test_mem_2
     full_vroom_cmd          = vroom_exe + " " + _object_model + c_partial_cmd \
                             + sv_partial_cmd + tcl_partial_cmd + test_mem_partial_cmd
     os.system(full_vroom_cmd)
@@ -495,7 +500,6 @@ def main():
     #Output:    build/coreip/firrtl/elaborated_config.json
     firrtl_build_elaborated_config_json = os.path.join(firrtl_build_dir, "elaborated_config.json")
     firrtl_build_dts_json           = os.path.join(firrtl_build_dir, core_name + ".json") #NOTICEME
-    test_mem_partial_cmd            = " --test-memory-json " + test_mem_1 + " --test-memory-json " + test_mem_2
     INPUT_CONFIG                    = os.path.join(federation_root, "configs", core_name + ".yml")
     BUILD_ELABORATED_CONFIG_JSON    = os.path.join(federation_root, "scripts", "build-elaborated-config-json.py")
     #I'm missing one line for the following cmd, but in this case it doesn't matter
@@ -531,7 +535,7 @@ def main():
     software_toolchain_dir      = os.path.join(software_dir, "toolchain")
     toolchain_build_toolchain   = os.path.join(software_toolchain_dir, "build_toolchain.py")
     TOOLCHAIN_CONFIG            = os.path.join(software_dir, "configs", "coreip_e3.json") #FIXME, not always coreip_e3.json
-    firrtl_build_iof_json       = os.path.join(firrtl_build_dir, core_name".iof.json")
+    firrtl_build_iof_json       = os.path.join(firrtl_build_dir, core_name + ".iof.json")
     toolchain_build_dir         = os.path.join(build_dir, "software", "toolchain")
 
     cmdline                     = toolchain_build_toolchain     + " "\
