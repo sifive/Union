@@ -240,6 +240,8 @@ def main():
             wake_build, federation_root = sys.argv[1], sys.argv[2]
     elif len(sys.argv) == 4:
             wake_build, federation_root, core_name = sys.argv[1], sys.argv[2], sys.argv[3]
+    else:
+        print("Usage: python replaceSim_0309.py wake_build_dir federation_root_dir [core_name, such as e31]")
 
 #==========================================Path Setup========================================
     build_dir               = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd_try")
