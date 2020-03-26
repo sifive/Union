@@ -8,17 +8,6 @@ import os
 import sys
 import subprocess
 
-federation_root         = ""
-wake_build              = ""
-file_index_json         = ""
-rocketchip_root         = ""
-firrtl_tool_src_root    = ""
-firrtl_jar              = ""
-federation_jar          = ""
-firrtl_build_dir        = ""
-verilog_build_conf      = ""
-memgen_build_dir        = ""
-
 
 FIRRTL_TRANSFORMS    = [\
 	"sifive.enterprise.firrtl.MemToRegOfVecTransform" \
@@ -59,15 +48,15 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
         ,verif_libraries_design_info_c, verif_libraries_build_dir\
         ,metadata_build_dir, sim_build_dir): \
 
-    CONFIG                  = "SiFiveCoreDesignerAlterations" #CHECKME
-    software_scripts_dir    = os.path.join(federation_root, "software", "scripts")
-    CREATE_GPT              = os.path.join(software_scripts_dir, "create-gpt")
-    MODEL                   = "e31"
-    TB                      = "TestDriver"
-    design                  = "CoreIPSubsystemAmbaAllPortRAMTestHarness.SiFiveCoreDesignerAlterations"
-    firrtl_build_dtb        = os.path.join(firrtl_build_dir, CONFIG+".dtb")
-    firrtl_build_dts        = os.path.join(firrtl_build_dir, CONFIG+".dts")
-    firrtl_build_dts_json   = os.path.join(firrtl_build_dir, CONFIG+".json")
+    CONFIG                              = "e31" #CHECKME
+    software_scripts_dir                = os.path.join(federation_root, "software", "scripts")
+    CREATE_GPT                          = os.path.join(software_scripts_dir, "create-gpt")
+    MODEL                               = "e31"
+    TB                                  = "TestDriver"
+    design                              = "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations"
+    firrtl_build_dtb                    = os.path.join(firrtl_build_dir, CONFIG+".dtb")
+    firrtl_build_dts                    = os.path.join(firrtl_build_dir, CONFIG+".dts")
+    firrtl_build_dts_json               = os.path.join(firrtl_build_dir, CONFIG+".json")
     firrtl_build_elaborated_config_json = os.path.join(firrtl_build_dir, "elaborated_config.json")
     firrtl_build_object_model_json      = os.path.join(firrtl_build_dir, CONFIG+".objectModel.json")
     ELF_CONVERT                         = os.path.join(software_scripts_dir, "elf_convert.py")
@@ -75,12 +64,12 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
     formal_test_dir                     = os.path.join(federation_root, "software", "tests", "formal")
     ipdelivery_raw_files_dir            = os.path.join(federation_root, "ipdelivery", "UNIVERSAL", "raw_files")
     INPUT_CONFIG                        = os.path.join(federation_root, "configs", "e31.yml")
-    scripts_dir             = os.path.join(federation_root, "scripts")
-    SICC                    = os.path.join(software_scripts_dir, "sicc")
-    SICC_MEE                = os.path.join(software_scripts_dir, "sicc_mee")
-    sim_testbench_v         = os.path.join(federation_root, "vsrc", "sim", TB+".sv")
-    deputy_dir              = os.path.join(federation_root, "deputy")
-    verif_libraries_design_info_c_dir = verif_libraries_design_info_c
+    scripts_dir                         = os.path.join(federation_root, "scripts")
+    SICC                                = os.path.join(software_scripts_dir, "sicc")
+    SICC_MEE                            = os.path.join(software_scripts_dir, "sicc_mee")
+    sim_testbench_v                     = os.path.join(federation_root, "vsrc", "sim", TB+".sv")
+    deputy_dir                          = os.path.join(federation_root, "deputy")
+    verif_libraries_design_info_c_dir   = verif_libraries_design_info_c
     verif_libraies_dir                  = verif_libraries_build_dir
     scripts_vroom_dir                   = os.path.join(scripts_dir, "vroom")
     sram_info_json                      = "" #CHECKME
@@ -123,7 +112,7 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
 
 
 def file_index_json_contents_middle(federation_root, software_build_dir, federation_software_build_dir):
-    software_build_software_compilation_config          = os.path.join(software_build_dir, "software", "compilation_config.json")
+    software_build_software_compilation_config          = os.path.join(software_build_dir, "compilation_config.json")
     software_bootloaders_dir                            = os.path.join(federation_software_build_dir, "bootloader")
     software_env_dir                                    = os.path.join(federation_software_build_dir, "env")
     software_test_dir                                   = os.path.join(federation_software_build_dir, "tests")
@@ -146,8 +135,10 @@ def file_index_json_contents_middle(federation_root, software_build_dir, federat
 #NEED TO MIGRATE FROM BASE.MK
 
 def file_index_json_contents_bottom(metadata_build_dir, verilog_build_dir, \
-        package_build_json_dependencies = ['\"/scratch/ericc/work/make_fed_test/builds/coreip_e31_fcd/memgen/e31.rams.json\"', "null"]):
-    design = "CoreIPSubsystemAmbaAllPortRAMTestHarness.SiFiveCoreDesignerAlterations" #FIXME
+        package_build_json_dependencies = ['\"/scratch/ericc/work/make_fed_test/builds/coreip_e31_fcd/memgen/e31.rams.json\"', "null"],\
+        core_name = "e31"):
+    design = "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations" #FIXME
+
 
     verilog_module_hier_json            = os.path.join(metadata_build_dir, "module_hier.json")
     verilog_testharness_hier_json       = os.path.join(metadata_build_dir, "testharness_hier.json")
@@ -157,9 +148,9 @@ def file_index_json_contents_bottom(metadata_build_dir, verilog_build_dir, \
     verilog_build_assertions_vsrcs_f    = os.path.join(verilog_build_dir, design+".assertions.vsrcs.F")
     verilog_build_coverage_vsrcs_f      = os.path.join(verilog_build_dir, design+".coverage.vsrcs.F")
     verilog_build_grandcentral_vsrcs_f  = os.path.join(verilog_build_dir, "sifive_insight.vsrcs.F") #FIXME
-    verilog_build_design_sitest         = os.path.join(verilog_build_dir, design+".sitest")
-    verilog_build_testbench_sitest      = os.path.join(verilog_build_dir, design+".testbench.sitest") #FIXME
-    verilog_testbench_f                 = os.path.join(verilog_build_dir, design+".testbench.F")#FIXME
+    verilog_build_design_sitest         = os.path.join(verilog_build_dir, core_name+".sitest")
+    verilog_build_testbench_sitest      = os.path.join(verilog_build_dir, core_name+".testbench.sitest") #FIXME
+    verilog_testbench_f                 = os.path.join(verilog_build_dir, core_name+".testbench.F")#FIXME
 
 
     return \
@@ -224,10 +215,12 @@ def gen_file_index(\
 
 def create_F_file(reference_folder, file_type, F_file_dir):
     srcs = []
+    append_dir = reference_folder.split(os.sep)[-1]
     for _, _, files in os.walk(reference_folder):
+        files.sort()
         for f in files:
             if file_type in f:
-                srcs.append(f)
+                srcs.append(os.path.join(append_dir, f))
 
     f = open(F_file_dir, "w")
     for s in srcs: f.write(s + "\n")
@@ -235,7 +228,8 @@ def create_F_file(reference_folder, file_type, F_file_dir):
 
 
 
-def gen_config_sitest(sim_build_dir, metadata_build_dir, verilog_build_dir, memgen_build_dir, config_sitest_name = "config.sitest"):
+def gen_config_sitest(sim_build_dir, metadata_build_dir, verilog_build_dir, memgen_build_dir,\
+         core_name, config_sitest_name = "config.sitest"):
     config_sitest   = os.path.join(sim_build_dir, config_sitest_name)
     f               = open(config_sitest, "w+")
     f.write("#This is generated by replaceSim.py\n")
@@ -249,13 +243,132 @@ def gen_config_sitest(sim_build_dir, metadata_build_dir, verilog_build_dir, memg
     f.write("torture_false_sharing_granularity \'8\'\n")
     f.write("define_testbench(Testbench::ECoreIP.new(readmemh_target: :any) do\n") #not neccesarily the case
     f.write("   allowed_boot_methods %i(testharness_ram)\n")
-    f.write("   load_file \'" + os.path.join(verilog_build_dir, "e31.sitest") + "\'\n")
-    f.write("   load_file \'" + os.path.join(verilog_build_dir, "e31.testbench.sitest") + "\'\n")
-    f.write("   load_json \'" + os.path.join(memgen_build_dir, "e31.rams.json") + "\'\n")
+    f.write("   load_file \'" + os.path.join(verilog_build_dir, core_name + ".sitest") + "\'\n")
+    f.write("   load_file \'" + os.path.join(verilog_build_dir, core_name + ".testbench.sitest") + "\'\n")
+    f.write("   load_json \'" + os.path.join(memgen_build_dir,  core_name + ".rams.json") + "\'\n")
     f.write("   load_json \'" + os.path.join(sim_build_dir, "rtl.json") + "\'\n")
     f.write("end)\n")
     f.close()
 
+
+
+
+def rtl_json_formated_string(first, second):
+    return "\t\t\"+" + first + "+" + second + "\",\n"
+
+
+def try_except_grep(cd_dir, grep_criteria):
+    try:
+        return subprocess.check_output("cd " + cd_dir + " && find . | grep " + grep_criteria, shell=True)
+    except subprocess.CalledProcessError as e:
+        if e.returncode > 1:
+            raise
+        return b''
+
+
+def gen_rtl_json(verilog_build_design_dir, verilog_build_testbench_dir, sim_build_dir, \
+        verif_design_info_sv_dir, federation_root, SIM_CLOCK_PERIOD, TB, test_indicator_module_name, MODEL):
+
+
+
+    cc_files_in_verilog_build_design_dir        = try_except_grep(verilog_build_design_dir,    ".cc")
+    cc_files_in_verilog_build_testbench_dir     = try_except_grep(verilog_build_testbench_dir, ".cc")
+
+    v_files_in_verilog_build_design_dir         = try_except_grep(verilog_build_design_dir    , ".v" )
+    sv_files_in_verilog_build_design_dir        = try_except_grep(verilog_build_design_dir    , ".sv")
+    v_files_in_verilog_build_testbench_dir      = try_except_grep(verilog_build_testbench_dir , ".v" )
+    sv_files_in_verilog_build_testbench_dir     = try_except_grep(verilog_build_testbench_dir , ".sv")
+
+
+    cc_files_in_verilog_build_design_dir        = cc_files_in_verilog_build_design_dir.decode("utf-8").rstrip("\n\t ").split("\n")
+    cc_files_in_verilog_build_testbench_dir     = cc_files_in_verilog_build_testbench_dir.decode("utf-8").rstrip("\n\t ").split("\n")
+    v_files_in_verilog_build_design_dir         = v_files_in_verilog_build_design_dir.decode("utf-8").rstrip("\n\t ").split("\n")
+    sv_files_in_verilog_build_design_dir        = sv_files_in_verilog_build_design_dir.decode("utf-8").rstrip("\n\t ").split("\n")
+    v_files_in_verilog_build_testbench_dir      = v_files_in_verilog_build_testbench_dir.decode("utf-8").rstrip("\n\t ").split("\n")
+    sv_files_in_verilog_build_testbench_dir     = sv_files_in_verilog_build_testbench_dir.decode("utf-8").rstrip("\n\t ").split("\n")
+
+    cc_files_in_verilog_build_design_dir        = None if not cc_files_in_verilog_build_design_dir \
+                                                    else cc_files_in_verilog_build_design_dir
+    cc_files_in_verilog_build_testbench_dir     = None if not cc_files_in_verilog_build_testbench_dir \
+                                                    else cc_files_in_verilog_build_testbench_dir
+    v_files_in_verilog_build_design_dir         = None if not v_files_in_verilog_build_design_dir \
+                                                    else v_files_in_verilog_build_design_dir
+    sv_files_in_verilog_build_design_dir        = None if not sv_files_in_verilog_build_design_dir \
+                                                    else sv_files_in_verilog_build_design_dir
+    v_files_in_verilog_build_testbench_dir      = None if not v_files_in_verilog_build_testbench_dir \
+                                                    else v_files_in_verilog_build_testbench_dir
+    sv_files_in_verilog_build_testbench_dir     = None if not sv_files_in_verilog_build_testbench_dir \
+                                                    else sv_files_in_verilog_build_testbench_dir
+
+
+    v_files_in_verilog_build_design_dir         = map(lambda x: \
+                                                    os.path.join(verilog_build_design_dir, x), \
+                                                    v_files_in_verilog_build_design_dir)
+    sv_files_in_verilog_build_design_dir        = map(lambda x: \
+                                                    os.path.join(verilog_build_design_dir, x), \
+                                                    sv_files_in_verilog_build_design_dir)
+    v_files_in_verilog_build_testbench_dir      = map(lambda x: \
+                                                    os.path.join(verilog_build_testbench_dir, x), \
+                                                    v_files_in_verilog_build_testbench_dir)
+    sv_files_in_verilog_build_testbench_dir     = map(lambda x: \
+                                                    os.path.join(verilog_build_testbench_dir,x), \
+                                                    sv_files_in_verilog_build_testbench_dir)
+
+    v_files_in_verilog_build_design_dir         = \
+            [item for item in v_files_in_verilog_build_design_dir if os.path.isfile(item)]
+    sv_files_in_verilog_build_design_dir        = \
+            [item for item in sv_files_in_verilog_build_design_dir if os.path.isfile(item)]
+    v_files_in_verilog_build_testbench_dir      = \
+            [item for item in v_files_in_verilog_build_testbench_dir if os.path.isfile(item)]
+    sv_files_in_verilog_build_testbench_dir     = \
+            [item for item in sv_files_in_verilog_build_testbench_dir if os.path.isfile(item)]
+
+    rtl_json                                = os.path.join(sim_build_dir, "rtl.json")
+    f                                       = open(rtl_json, "w+")
+    sim_testbench_v                         = os.path.join(federation_root, "vsrc", "sim", TB+".sv")
+    f.write("{\n")
+    f.write("\t\"csrcs\":[")
+    #f.write("\t\t"+",\n\t\t".join(map(lambda x: "\"" + os.path.join(verilog_build_design_dir, x)\
+    #                + "\"", cc_files_in_verilog_build_design_dir)))
+    #f.write("\t\t"+",\n\t\t".join(map(lambda x: "\"" + os.path.join(verilog_build_testbench_dir, x)\
+    #                + "\"", cc_files_in_verilog_build_testbench_dir)))
+    #FIXME
+    f.write("\n\t\t" + "null" + "\n],\n\"vsrcs\":[\n")
+    f.write(",\n\t\t".join(map(lambda x: "\"" + os.path.join(verilog_build_design_dir, x)\
+                    + "\"", v_files_in_verilog_build_design_dir)))
+    f.write(",\n\t\t")
+    f.write(",\n\t\t".join(map(lambda x: "\"" + os.path.join(verilog_build_design_dir, x)\
+                    + "\"", sv_files_in_verilog_build_design_dir)))
+    f.write(",\n\t\t")
+    f.write(",\n\t\t".join(map(lambda x: "\"" + os.path.join(verilog_build_testbench_dir, x)\
+                    + "\"", v_files_in_verilog_build_testbench_dir)))
+    f.write(",\n\t\t")
+    f.write(",\n\t\t".join(map(lambda x: "\"" + os.path.join(verilog_build_testbench_dir, x)\
+                    + "\"", sv_files_in_verilog_build_testbench_dir)))
+    f.write(",\n\t\t")
+    f.write("\n\t\t" + "\"" + sim_testbench_v + "\"\n")
+    f.write("\t],\n\"compile_opts\":[\n")
+    f.write(rtl_json_formated_string("incdir", sim_build_dir))
+    f.write(rtl_json_formated_string("incdir", verif_design_info_sv_dir))
+    f.write(rtl_json_formated_string("incdir", os.path.join(federation_root, "vsrc")))
+    f.write(rtl_json_formated_string("incdir", os.path.join(federation_root, "vsrc", "sifive")))
+    f.write(rtl_json_formated_string("incdir", os.path.join(federation_root, "vsrc", "sifive", "uvm")))
+    f.write(rtl_json_formated_string("incdir", os.path.join(federation_root, "vsrc", "sifive", "uvm", "amba")))
+    f.write(rtl_json_formated_string("define", "CLOCK_PERIOD=" + SIM_CLOCK_PERIOD))
+    f.write(rtl_json_formated_string("define", "PRINTF_COND=" + TB + ".printf_cond"))
+    f.write(rtl_json_formated_string("define", "STOP_COND=!"  + TB + ".reset"))
+    f.write(rtl_json_formated_string("define", "RANDOMIZE_MEM_INIT"))
+    f.write(rtl_json_formated_string("define", "RANDOMIZE_REG_INIT"))
+    f.write(rtl_json_formated_string("define", "RANDOMIZE_GARBAGE_ASSIGN"))
+    f.write(rtl_json_formated_string("define", "RANDOMIZE_INVALID_ASSIGN"))
+    f.write(rtl_json_formated_string("define", "RANDOMIZE_DELAY=2"))
+    f.write(rtl_json_formated_string("define", "USE_OBHAV_MODELS"))
+    f.write(rtl_json_formated_string("define", "TEST_INDICATOR_MODULE_NAME=" + test_indicator_module_name))
+    f.write(rtl_json_formated_string("define", "MODEL=" + MODEL))
+    f.write(rtl_json_formated_string("libext", ".v+.sv"))
+    f.write("\t\t\"+notimingchecks\"\n")
+    f.write("\t]\n")
+    f.write("}")
 
 def main():
 
@@ -295,40 +408,40 @@ def main():
     verif_libraries_design_info_sv     = os.path.join(verif_libraries_build_dir, "design_info", "sv")
     verif_libraries_design_info_tcl    = os.path.join(verif_libraries_build_dir, "design_info", "tcl")
 
-    vroom_exe               = os.path.join(federation_root, "scripts", "vroom", "vroom.py")
-    _object_model           = os.path.join(firrtl_build_dir, core_name + ".objectModel.json")
-    memgen_build_dir = os.path.join(build_dir, "memgen")
-    memgen_build_rams_v             = os.path.join(memgen_build_dir, core_name + ".rams.v")
-    memgen_conf_json                = os.path.join(federation_root, "vlsi-mem", "mem_gen_config.json")
-    memgen_build_memalpha_meta      = os.path.join(memgen_build_dir, core_name + ".memalpha.json")
-    MEM_GEN                         = os.path.join(federation_root, "vlsi-mem/vlsi_mem_gen.behavioral-DPI")
+    vroom_exe                           = os.path.join(federation_root, "scripts", "vroom", "vroom.py")
+    _object_model                       = os.path.join(firrtl_build_dir, core_name + ".objectModel.json")
+    memgen_build_dir                    = os.path.join(build_dir, "memgen")
+    memgen_build_rams_v                 = os.path.join(memgen_build_dir, core_name + ".rams.v")
+    memgen_conf_json                    = os.path.join(federation_root, "vlsi-mem", "mem_gen_config.json")
+    memgen_build_memalpha_meta          = os.path.join(memgen_build_dir, core_name + ".memalpha.json")
+    MEM_GEN                             = os.path.join(federation_root, "vlsi-mem/vlsi_mem_gen.behavioral-DPI")
 
-    memgen_build_rams_json          = os.path.join(memgen_build_dir, core_name + ".rams.json")
-    MEMALPHA                        = os.path.join(federation_root, "memory-alpha", "bin", "memalpha")
+    memgen_build_rams_json              = os.path.join(memgen_build_dir, core_name + ".rams.json")
+    MEMALPHA                            = os.path.join(federation_root, "memory-alpha", "bin", "memalpha")
 
     firrtl_build_elaborated_config_json = os.path.join(firrtl_build_dir, "elaborated_config.json")
-    firrtl_build_dts_json           = os.path.join(firrtl_build_dir, core_name + ".json") #NOTICEME
-    INPUT_CONFIG                    = os.path.join(federation_root, "configs", core_name + ".yml")
-    BUILD_ELABORATED_CONFIG_JSON    = os.path.join(federation_root, "scripts", "build-elaborated-config-json.py")
+    firrtl_build_dts_json               = os.path.join(firrtl_build_dir, core_name + ".json") #NOTICEME
+    INPUT_CONFIG                        = os.path.join(federation_root, "configs", core_name + ".yml")
+    BUILD_ELABORATED_CONFIG_JSON        = os.path.join(federation_root, "scripts", "build-elaborated-config-json.py")
 
     software_build_dir                          = os.path.join(build_dir, "software")
     software_build_software_compilation_config  = os.path.join(software_build_dir, "compilation_config.json")
 
-    software_dir                = os.path.join(federation_root, "software")
-    software_toolchain_dir      = os.path.join(software_dir, "toolchain")
-    toolchain_build_toolchain   = os.path.join(software_toolchain_dir, "build_toolchain.py")
-    TOOLCHAIN_CONFIG            = os.path.join(software_dir, "configs", "coreip_e3.json") #FIXME, not always coreip_e3.json
-    firrtl_build_iof_json       = os.path.join(firrtl_build_dir, core_name + ".iof.json")
-    toolchain_build_dir         = os.path.join(build_dir, "software", "toolchain")
+    software_dir                                = os.path.join(federation_root, "software")
+    software_toolchain_dir                      = os.path.join(software_dir, "toolchain")
+    toolchain_build_toolchain                   = os.path.join(software_toolchain_dir, "build_toolchain.py")
+    TOOLCHAIN_CONFIG                            = os.path.join(software_dir, "configs", "coreip_e3.json") #FIXME, not always coreip_e3.json
+    firrtl_build_iof_json                       = os.path.join(firrtl_build_dir, core_name + ".iof.json")
+    toolchain_build_dir                         = os.path.join(build_dir, "software", "toolchain")
 
-    software_scripts_dir            = os.path.join(software_dir, "scripts")
-    BUILD_MEMINFO_LIB               = os.path.join(software_scripts_dir, "build-meminfo-lib")
-    toolchain_build_meminfo_dir     = os.path.join(toolchain_build_dir, "libraries", "meminfo")
-    BUILD_HARTINFO_LIB              = os.path.join(software_scripts_dir, "build-hartinfo-lib")
-    toolchain_build_hartinfo_dir    = os.path.join(toolchain_build_dir, "libraries", "hartinfo")
+    software_scripts_dir                        = os.path.join(software_dir, "scripts")
+    BUILD_MEMINFO_LIB                           = os.path.join(software_scripts_dir, "build-meminfo-lib")
+    toolchain_build_meminfo_dir                 = os.path.join(toolchain_build_dir, "libraries", "meminfo")
+    BUILD_HARTINFO_LIB                          = os.path.join(software_scripts_dir, "build-hartinfo-lib")
+    toolchain_build_hartinfo_dir                = os.path.join(toolchain_build_dir, "libraries", "hartinfo")
 
-    package_build_dir   = ""
-    sim_build_dir       = os.path.join(build_dir, "sim")
+    package_build_dir                           = ""
+    sim_build_dir                               = os.path.join(build_dir, "sim")
 #=============================================Path setup done======================================================
 
 
@@ -594,11 +707,11 @@ def main():
     #Input:     some variables
 
     #Output:    build/coreip/software/compilation_config.json
-    #os.makedirs(software_build_dir)
+    os.makedirs(software_build_dir)
     XCCMODEL = "medlow"
     TEST_ENV = "default"
     f = open(software_build_software_compilation_config, "w")
-    f.write("{" + "\"code_model\"" + ":" + XCCMODEL + " " + "\"test_env\"" + ":" + TEST_ENV + "}")
+    f.write("{" + "\"code_model\"" + ": \"" + XCCMODEL  + "\", \"test_env\"" + ": \"" + TEST_ENV + "\"}")
     f.close()
 
 
@@ -635,7 +748,30 @@ def main():
     #Sim dir
     if not os.path.isdir(sim_build_dir):
         os.makedirs(sim_build_dir)
-    gen_config_sitest(sim_build_dir, metadata_build_dir, verilog_build_dir, memgen_build_dir, "config.sitest")
+    gen_config_sitest(sim_build_dir, metadata_build_dir, verilog_build_dir, memgen_build_dir, core_name, "config.sitest")
+
+
+
+    #rtl_json
+    design                      = "CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations"
+    verilog_build_design_dir    = os.path.join(verilog_build_dir, design)
+    verilog_build_testbench_dir = os.path.join(verilog_build_dir, design + ".testbench")
+    SIM_CLK_PERIOD              = "5.0"
+    TB                          = "TestDriver"
+    MODEL                       = "CoreIPSubsystemAllPortRAMTestHarness"
+    verilog_module_hier_json    = os.path.join(metadata_build_dir, "module_hier.json")
+    test_indicator_module_name  = "SiFive_TLTestIndicator" #FIXME
+    verif_design_info_sv_dir    = os.path.join(build_dir, "verif", "libraries", "design_info", "sv")
+    gen_rtl_json(verilog_build_design_dir, \
+            verilog_build_testbench_dir, \
+            sim_build_dir, \
+            verif_design_info_sv_dir, \
+            federation_root, \
+            SIM_CLK_PERIOD, \
+            TB, \
+            test_indicator_module_name, \
+            MODEL\
+            )
 
 if __name__== "__main__":
     main()
