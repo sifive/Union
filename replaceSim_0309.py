@@ -81,34 +81,36 @@ def file_index_json_contents_top(federation_root, software_scripts_dir, \
     formattedStr("bin2denali",                      software_scripts_dir+"/bin2denali") + \
     formattedStr("bin2hex",                         software_scripts_dir+"/bin2hex") + \
     formattedStr("create_gpt",                      CREATE_GPT) + \
-    formattedStr("design",                          design) +\
-    formattedStr("device_tree",                     firrtl_build_dtb) + \
-    formattedStr("device_tree_string",              firrtl_build_dts) + \
-    formattedStr("device_tree_string_json",         firrtl_build_dts_json) + \
     formattedStr("elaborated_config_json",          firrtl_build_elaborated_config_json) + \
     formattedStr("object_model_json",               firrtl_build_object_model_json) + \
-    formattedStr("elf_convert",                     ELF_CONVERT) + \
     formattedStr("federation_dir",                  federation_root) + \
     formattedStr("file_index_json",                 file_index_json) + \
     formattedStr("firrtl_build_dir",                firrtl_build_dir,   indent=True) + \
-    formattedStr("formal_test_dir",                 formal_test_dir,    indent=True) + \
-    formattedStr("ipdelivery_raw_files_dir",        ipdelivery_raw_files_dir) + \
-    formattedStr("input_config",                    INPUT_CONFIG) + \
-    formattedStr("memgen_dir",                      memgen_build_dir) + \
-    formattedStr("package_build_dir",               package_build_dir) + \
-    formattedStr("project_build_dir",               project_build_dir) + \
     formattedStr("run_gdb_self_checking_test",      scripts_dir + "/run-gdb-self-checking-test") + \
     formattedStr("sicc",                            SICC) + \
     formattedStr("sicc_mee",                        SICC_MEE) + \
-    formattedStr("sim_build_dir",                   sim_build_dir) + \
-    formattedStr("sim_testbench_v",                 sim_testbench_v) + \
     formattedStr("sitest_json_dir",                 federation_root + "/src/main/sitest") + \
-    formattedStr("metadata_build_dir",              metadata_build_dir) + \
-    formattedStr("deputy_dir",                      deputy_dir) + \
-    formattedStr("verif_design_info_c_dir",         verif_libraries_design_info_c) + \
-    formattedStr("verif_libraries_dir",             verif_libraries_build_dir) + \
-    formattedStr("scripts_vroom_dir",               scripts_vroom_dir) + \
-    formattedStr("sram_info_json",                  sram_info_json)
+    formattedStr("formal_test_dir",                 formal_test_dir,    indent=True) + \
+    formattedStr("memgen_dir",                      memgen_build_dir) + \
+    formattedStr("project_build_dir",               project_build_dir) + \
+    formattedStr("verif_libraries_dir",             verif_libraries_build_dir)+ \
+    formattedStr("verif_design_info_c_dir",         verif_libraries_design_info_c)
+    #formattedStr("sim_build_dir",                   sim_build_dir) +
+    #formattedStr("sim_testbench_v",                 sim_testbench_v) +
+    #formattedStr("metadata_build_dir",              metadata_build_dir) +
+    #formattedStr("deputy_dir",                      deputy_dir) +
+    #formattedStr("scripts_vroom_dir",               scripts_vroom_dir) +
+    #formattedStr("sram_info_json",                  sram_info_json) +
+    #formattedStr("design",                          design) +
+    #formattedStr("device_tree",                     firrtl_build_dtb) +
+    #formattedStr("device_tree_string",              firrtl_build_dts) +
+    #formattedStr("device_tree_string_json",         firrtl_build_dts_json) +
+    #formattedStr("elf_convert",                     ELF_CONVERT) +
+    #formattedStr("ipdelivery_raw_files_dir",        ipdelivery_raw_files_dir) +
+    #formattedStr("input_config",                    INPUT_CONFIG) +
+    #formattedStr("package_build_dir",               package_build_dir) +
+
+
 
 
 def file_index_json_contents_middle(federation_root, software_build_dir, federation_software_build_dir):
@@ -121,13 +123,13 @@ def file_index_json_contents_middle(federation_root, software_build_dir, federat
     toolchain_build_linker_dir                          = os.path.join(software_build_dir, "toolchain", "linker")
 
     return \
-    formattedStr("software_compilation_config_json",    software_build_software_compilation_config)+\
     formattedStr("software_bootloaders_dir",            software_bootloaders_dir) + \
     formattedStr("software_dir",                        federation_software_build_dir) + \
-    formattedStr("software_test_envs_dir",              software_env_dir) + \
+    formattedStr("toolchain_config",                    TOOLCHAIN_CONFIG) + \
     formattedStr("software_test_crt",                   software_test_dir + "/common/crt.S") + \
     formattedStr("software_tests_dir",                  software_test_dir) + \
-    formattedStr("toolchain_config",                    TOOLCHAIN_CONFIG) + \
+    formattedStr("software_compilation_config_json",    software_build_software_compilation_config) + \
+    formattedStr("software_test_envs_dir",              software_env_dir) + \
     formattedStr("toolchain_include_dir",               toolchain_build_include_dir) + \
     formattedStr("toolchain_linker_script_dir",         toolchain_build_linker_dir)
 
@@ -154,25 +156,26 @@ def file_index_json_contents_bottom(metadata_build_dir, verilog_build_dir, \
 
 
     return \
-    formattedStr("verilog_module_hier_json",            verilog_module_hier_json) + \
-    formattedStr("verilog_testharness_hier_json",       verilog_testharness_hier_json) + \
-    formattedStr("verilog_build_dir",                   verilog_build_dir) + \
-    formattedStr("verilog_build_design_dir",            verilog_build_design_dir) + \
-    formattedStr("verilog_build_design_f",              verilog_build_design_f) + \
-    formattedStr("verilog_build_design_vsrcs_f",        verilog_design_vsrcs_f) + \
-    formattedStr("verilog_build_testbench_dir",         os.path.join(verilog_build_dir, design + ".testbench")) + \
-    formattedStr("verilog_build_testbench_f",           os.path.join(verilog_build_dir, design+".testbench.F")) + \
-    formattedStr("verilog_build_testbench_vsrcs_f",     os.path.join(verilog_build_dir, design+".testbench.vsrcs.F")) + \
-    formattedStr("verilog_build_assertions_vsrcs_f",    verilog_build_assertions_vsrcs_f) + \
-    formattedStr("verilog_build_coverage_vsrcs_f",      verilog_build_coverage_vsrcs_f) + \
-    formattedStr("verilog_build_grandcentral_vsrcs_f",  verilog_build_grandcentral_vsrcs_f) + \
-    formattedStr("verilog_build_design_sitest",         verilog_build_design_sitest) + \
-    formattedStr("verilog_build_testbench_sitest",      verilog_build_testbench_sitest) + \
-    formattedStr("verilog_testbench_f",                 "") + \
-    "\t\"verilog_jsons\": [\n\t\t" + \
-    ",\n\t\t".join(package_build_json_dependencies) + \
-    "\n\t]"
-    #FIXME
+        formattedStr("verilog_testbench_f",                 "") + \
+        "\t\"verilog_jsons\": [\n\t\t" + \
+        ",\n\t\t".join(package_build_json_dependencies) + \
+        "\n\t]"
+        #FIXME
+
+    #formattedStr("verilog_module_hier_json",            verilog_module_hier_json) +
+    #formattedStr("verilog_testharness_hier_json",       verilog_testharness_hier_json) +
+    #formattedStr("verilog_build_dir",                   verilog_build_dir) +
+    #formattedStr("verilog_build_design_dir",            verilog_build_design_dir) +
+    #formattedStr("verilog_build_design_f",              verilog_build_design_f) +
+    #formattedStr("verilog_build_design_vsrcs_f",        verilog_design_vsrcs_f) +
+    #formattedStr("verilog_build_testbench_dir",         os.path.join(verilog_build_dir, design + ".testbench")) +
+    #formattedStr("verilog_build_testbench_f",           os.path.join(verilog_build_dir, design+".testbench.F")) +
+    #formattedStr("verilog_build_testbench_vsrcs_f",     os.path.join(verilog_build_dir, design+".testbench.vsrcs.F")) +
+    #formattedStr("verilog_build_assertions_vsrcs_f",    verilog_build_assertions_vsrcs_f) +
+    #formattedStr("verilog_build_coverage_vsrcs_f",      verilog_build_coverage_vsrcs_f) +
+    #formattedStr("verilog_build_grandcentral_vsrcs_f",  verilog_build_grandcentral_vsrcs_f) +
+    #formattedStr("verilog_build_design_sitest",         verilog_build_design_sitest) +
+    #formattedStr("verilog_build_testbench_sitest",      verilog_build_testbench_sitest) +
 
 
 def gen_file_index(\
@@ -711,7 +714,7 @@ def main():
     XCCMODEL = "medlow"
     TEST_ENV = "default"
     f = open(software_build_software_compilation_config, "w")
-    f.write("{" + "\"code_model\"" + ": \"" + XCCMODEL  + "\", \"test_env\"" + ": \"" + TEST_ENV + "\"}")
+    f.write("{" + "\"code_model\"" + ": \"" + XCCMODEL + "" + "\", \"test_env\"" + ": \"" + TEST_ENV + "\"}")
     f.close()
 
 
