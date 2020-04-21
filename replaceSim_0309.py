@@ -353,46 +353,6 @@ def gen_rtl_json(verilog_build_design_dir, verilog_build_testbench_dir, sim_buil
 def config_sitest_formatted_string(first, second):
     return first + " \'" + second + "\'"
 
-def gen_config_sitest_more_accurate(\
-        sim_build_dir,\
-        CONFIG,\
-        project_build_dir,\
-        file_index_json,\
-        BREKER_HOME,\
-        MODULE_BREKER_TREKSOC,\
-        MODULE_BREKER_COHAPP,\
-        design_top_module_name,\
-        TORTURE_FALSE_SHARING_GRANULARITY,\
-        SITEST_TESTBENCH_CONSTRUCTOR,\
-        SITEST_BOOT_METHODS,\
-        verilog_build_design_sitest,\
-        verilog_build_testbench_sitest,\
-        package_build_json_dependencies,\
-        sim_build_rtl_json,\
-        variable_table
-    ):
-    config_sitest   = os.path.join(sim_build_dir, "config.sitest")
-    f               = open(config_sitest, "w+")
-    f.write("#create by replaceSIm\n")
-    f.write(config_sitest_formatted_string("enterprise_config",     CONFIG) + "\n")
-    f.write(config_sitest_formatted_string("makefile_config",       project_build_dir)      + "\n") #CHECKME
-    f.write(config_sitest_formatted_string("file_index",            file_index_json)        + "\n")
-    f.write(config_sitest_formatted_string("breker_home",           BREKER_HOME)            + "\n")
-    f.write(config_sitest_formatted_string("breker_treksoc_module", MODULE_BREKER_TREKSOC)  + "\n")
-    f.write(config_sitest_formatted_string("breker_cohapp_module",  MODULE_BREKER_COHAPP)   + "\n")
-    f.write(config_sitest_formatted_string("top_module_name",       design_top_module_name) + "\n")
-    f.write(config_sitest_formatted_string("torture_false_sharing_granularity",\
-                                                TORTURE_FALSE_SHARING_GRANULARITY)          + "\n")
-    f.write("define_testbench(Testbench::ECoreIP.new(readmemh_target: :any) do)\n")
-    f.write("   allowed_boot_methods %i(testharness_ram)\n")
-    f.write("\t" + config_sitest_formatted_string("load_file",      verilog_build_design_sitest)    + "\n")
-    f.write("\t" + config_sitest_formatted_string("load_file",      verilog_build_testbench_sitest) + "\n")
-    f.write("\t" + config_sitest_formatted_string("load_json",      sim_build_rtl_json)             + "\n")
-    f.write("\t" + config_sitest_formatted_string("load_json",      package_build_json_dependencies[0]) + "\n")
-    f.write("end)")
-    f.close()
-
-
 
 def soft_link(Dir, link_name, link_dest):
     symlink = os.path.join(Dir, link_name)
@@ -585,24 +545,14 @@ def main():
 
     os.system("cp -r " + wake_firrtl_memcon_file + " " + verilog_build_dir_conf)
 
-    #_vsrcs_F             = os.path.join(verilog_build_dir, \
-    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".vsrcs.F")
-    #_F                   = os.path.join(verilog_build_dir, \
-    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".F")
-    #_vsrcs_testbn_F      = os.path.join(verilog_build_dir, \
-    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.vsrcs.F")
-    #_testbn_F            = os.path.join(verilog_build_dir, \
-    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.F")
 
-
-    _testbn_F   = \
+    _testbn_F = \
             os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".testbench.F")
 
-    _vsrcs_F    = \
+    _vsrcs_F = \
             os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".vsrcs.F")
 
-    _F          = \
-            os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".F")
+    _F = os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".F")
 
     _vsrcs_testbn_F = \
             os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".testbench.vsrcs.F")
@@ -824,32 +774,6 @@ def main():
             MODEL\
     )
 
-    #CONFIG                      = "SiFiveCoreDesignerAlterations"
-    #project_build_name          = "coreip_e31_fcd"
-    #BREKER_HOME                 = "/sifive/tools/breker/treksoc/treksoc-4.3.21_20191120_64b_el6"
-    #MODULE_BREKER_TREKSOC       = "breker/treksoc/4.3.21"
-    #MODULE_BREKER_COHAPP        = "breker/coherencyTrekApp/1.0.22"
-    #design_top_module_name      = "SiFive_CoreIPSubsystem"
-    #TORTURE_FALSE_SHARING_GRANULARITY = "\'8\'"
-
-    #config.sitest
-    #gen_config_sitest(
-    #    sim_build_dir,\
-    #    CONFIG,\
-    #    project_build_name,\
-    #    file_index_json,\
-    #    BREKER_HOME,\
-    #    MODULE_BREKER_TREKSOC,\
-    #    MODULE_BREKER_COHAPP,\
-    #    design_top_module_name,\
-    #    TORTURE_FALSE_SHARING_GRANULARITY,\
-    #    SITEST_TESTBENCH_CONSTRUCTOR,\
-    #    SITEST_BOOT_METHODS,\
-    #    verilog_build_design_sitest,\
-    #    verilog_build_testbench_sitest,\
-    #    package_build_json_dependencies,\
-    #    sim_build_rtl_json\
-    #)
 
     sitest_exe          = os.path.join(federation_root, "sitest", "exe", "sitest")
     sitest_actual_exe   = os.path.join(federation_root, "sitest", "exe", "sitest.actual")
