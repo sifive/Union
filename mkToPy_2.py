@@ -10,7 +10,54 @@ import sys
 
 
 ASSIGNMENT = [":=", "?=", "+=", "="]
+RESERVE_WORD = [
+        "define",\
+        "endef",\
+        "undefine",\
+        "ifeq",\
+        "ifneq",\
+        "else",\
+        "endif",\
+        "include",\
+        "-include",\
+        "override",\
+        "export",\
+        "unexport",\
+        "private",\
+        "vpath"
+]
 
+RESERVE_CMD = [
+        "subst",\
+        "patsubst",\
+        "strip",\
+        "findstring",\
+        "filter",\
+        "filter-out",\
+        "sort",\
+        "word",\
+        "words",\
+        "wordlist",\
+        "firstword",\
+        "lastword",\
+        "dir",\
+        "notdir",\
+        "suffix",\
+        "basename",\
+        "addsuffix",\
+        "addprefix",\
+        "join",\
+        "wildcard",\
+        "realpath",\
+        "abspath",\
+        "error",\
+        "warning",\
+        "shell",\
+        "origin",\
+        "flavor",\
+        "foreach",\
+        "eval",\
+        ]
 
 
 def strip_comment(content):
@@ -36,7 +83,7 @@ def readAllMakefile(makefile):
     mk_common_dir       = os.path.abspath(os.path.join(mk_common_dir, "..", "common"))
     federation_root     = os.path.abspath(os.path.join(mk_common_dir, "..", ".."))
     base_mk             = os.path.join(federation_root, "mk", "common", "base.mk")
-    toBeRead            = [open(makefile, "r"), open(base_mk, "r")]
+    toBeRead            = [open(base_mk, "r"), open(makefile, "r")]
     variable_tmp_table  = {
         "mk_common_dir"         : mk_common_dir,
         "mk_base_configs_dir"   : mk_base_configs_dir,
@@ -128,9 +175,6 @@ def build_define_assignment_table(content):
         #Don't mind condition
     return rtn_assignment_table, rtn_define_table
 
-def test():
-    print("test")
-
 def main():
     makefile                    = sys.argv[1]
     content, variable_table     = readAllMakefile(makefile)
@@ -139,6 +183,7 @@ def main():
 
     for vt in variable_table:
         print(vt + ": " + variable_table[vt])
+
     #for vt in variable_table:
     #    print(vt)
     #    print("\n")
