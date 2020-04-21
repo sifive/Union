@@ -7,6 +7,7 @@
 import os
 import sys
 import subprocess
+import argparse
 import mkToPy_2
 
 FIRRTL_TRANSFORMS    = [\
@@ -36,6 +37,14 @@ FIRRTL_TRANSFORMS    = [\
 	,"sifive.enterprise.firrtl.RetimeModulesTransform"
 	]
 
+def parseArg():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-wakeDest', action="store", dest="wake")
+    parser.add_argument('-fed', action="store", dest="fed")
+    parser.add_argument('-mk',  action="store", dest="mk")
+    parser.add_argument('-cName', action="store", dest="corename")
+    args = parser.parse_args()
+    return args
 
 def formattedStr(first, second, indent=False):
     if indent is False:
@@ -365,14 +374,11 @@ def main():
     wake_build      = ""
     federation_root = ""
     core_name       = "e31" #if not otherwise specify
-    if   len(sys.argv) == 3:
-            wake_build, federation_root = sys.argv[1], sys.argv[2]
-    elif len(sys.argv) == 4:
-            wake_build, federation_root, makefile = sys.argv[1], sys.argv[2], sys.argv[3]
-            #core_name = makefile.split(".")[0]
-    else:
-        print("Usage: python replaceSim_0309.py wake_build_dir federation_root_dir [core_name, such as e31]")
-
+    args = parseArg()
+    wake_build      = args.wake
+    federation_root = args.fed
+    makefile        = args.mk
+    core_name       = args.corename
     _, variable_table = mkToPy_2.readAllMakefile(makefile)
     toolchain  =  variable_table["TOOLCHAIN_CONFIG"].split(os.sep)
     variable_table["TOOLCHAIN_CONFIG"] = os.path.join(federation_root, "software", toolchain[1], toolchain[2])
