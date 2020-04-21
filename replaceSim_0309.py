@@ -216,8 +216,8 @@ def gen_config_sitest(sim_build_dir, metadata_build_dir, verilog_build_dir, memg
     f.write("breker_cohapp_module \'breker/coherencyTrekApp/1.0.22\'\n")
     f.write("top_module_name \'SiFive_CoreIPSubsystem\'\n")
     f.write("torture_false_sharing_granularity \'8\'\n")
-    f.write("define_testbench(Testbench::ECoreIP.new(readmemh_target: :any) do\n") #not neccesarily the case
-    f.write("   allowed_boot_methods %i(testharness_ram)\n")
+    f.write("define_testbench" + variable_table["SITEST_TESTBENCH_CONSTRUCTOR"] + " do\n")
+    f.write("   allowed_boot_methods %i" + variable_table["SITEST_BOOT_METHODS"] + "\n")
     f.write("   load_file \'" + os.path.join(verilog_build_dir, core_name + ".sitest") + "\'\n")
     f.write("   load_file \'" + os.path.join(verilog_build_dir, core_name + ".testbench.sitest") + "\'\n")
     f.write("   load_json \'" + os.path.join(memgen_build_dir,  core_name + ".rams.json") + "\'\n")
@@ -380,8 +380,8 @@ def gen_config_sitest_more_accurate(\
     f.write(config_sitest_formatted_string("top_module_name",       design_top_module_name) + "\n")
     f.write(config_sitest_formatted_string("torture_false_sharing_granularity",\
                                                 TORTURE_FALSE_SHARING_GRANULARITY)          + "\n")
-    f.write(config_sitest_formatted_string("define_testbench",      SITEST_TESTBENCH_CONSTRUCTOR) + "do\n")
-    f.write("\t" + "allowed_boot_methods" + "%i(testharness_ram)\n")
+    f.write("define_testbench(Testbench::ECoreIP.new(readmemh_target: :any) do)\n")
+    f.write("   allowed_boot_methods %i(testharness_ram)\n")
     f.write("\t" + config_sitest_formatted_string("load_file",      verilog_build_design_sitest)    + "\n")
     f.write("\t" + config_sitest_formatted_string("load_file",      verilog_build_testbench_sitest) + "\n")
     f.write("\t" + config_sitest_formatted_string("load_json",      sim_build_rtl_json)             + "\n")
@@ -581,14 +581,28 @@ def main():
 
     os.system("cp -r " + wake_firrtl_memcon_file + " " + verilog_build_dir_conf)
 
-    _vsrcs_F             = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".vsrcs.F")
-    _F                   = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".F")
-    _vsrcs_testbn_F      = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.vsrcs.F")
-    _testbn_F            = os.path.join(verilog_build_dir, \
-                                "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.F")
+    #_vsrcs_F             = os.path.join(verilog_build_dir, \
+    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".vsrcs.F")
+    #_F                   = os.path.join(verilog_build_dir, \
+    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".F")
+    #_vsrcs_testbn_F      = os.path.join(verilog_build_dir, \
+    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.vsrcs.F")
+    #_testbn_F            = os.path.join(verilog_build_dir, \
+    #                            "CoreIPSubsystemAllPortRAMVerificationTestHarnessWithDPIC." + core_name + ".testbench.F")
+
+
+    _testbn_F   = \
+            os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".testbench.F")
+
+    _vsrcs_F    = \
+            os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".vsrcs.F")
+
+    _F          = \
+            os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".F")
+
+    _vsrcs_testbn_F = \
+            os.path.join(verilog_build_dir, variable_table["MODEL"] + core_name + ".testbench.vsrcs.F")
+
 
 
 
