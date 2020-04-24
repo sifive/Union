@@ -144,6 +144,14 @@ def readAllMakefile(makefile):
 
     return rtn_content_list, variable_tmp_table
 
+
+def print_table(dictionary):
+    print("\n=============================variable_table_start===================================")
+    for d in dictionary:
+        print(d + ": " + dictionary[d])
+    print("=============================variable_table_ends===================================\n")
+
+
 def build_define_assignment_table(content):
     rtn_assignment_table = []
     rtn_define_table = []
