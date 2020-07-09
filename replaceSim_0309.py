@@ -39,10 +39,11 @@ FIRRTL_TRANSFORMS    = [\
 
 def parseArg():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-wakeDest', action="store", dest="wake")
-    parser.add_argument('-fed', action="store", dest="fed")
-    parser.add_argument('-mk',  action="store", dest="mk")
-    parser.add_argument('-cName', action="store", dest="corename")
+    parser.add_argument('-wakeDest',    action="store",         dest="wake")
+    parser.add_argument('-fed',         action="store",         dest="fed")
+    parser.add_argument('-mk',          action="store",         dest="mk",          help="absolute path to makefile")
+    parser.add_argument('-cName',       action="store",         dest="corename",    help="set core name as in wake")
+    parser.add_argument('-printTable',  action="store_true",    default=False, dest="pt", help="print variable table")
     args = parser.parse_args()
     return args
 
@@ -368,20 +369,26 @@ def soft_link(Dir, link_name, link_dest):
     os.symlink(link_dest, symlink)
 
 
-
 def main():
 
-    wake_build      = ""
-    federation_root = ""
-    core_name       = "e31" #if not otherwise specify
     args = parseArg()
+
+    core_name       = "e31" #if not otherwise specify
     wake_build      = args.wake
     federation_root = args.fed
     makefile        = args.mk
     core_name       = args.corename
+
+    if os.path.exists(wake_build) is False: sys.exit("wake directory not exist")
+    if os.path.exists(federation_root) is False: sys.exit("federation root not exist")
+    if os.path.exists(makefile) is False: sys.exit("makefile not exist")
+
     _, variable_table = mkToPy_2.readAllMakefile(makefile)
+    #modify variable table, just a temporary solution
     toolchain  =  variable_table["TOOLCHAIN_CONFIG"].split(os.sep)
     variable_table["TOOLCHAIN_CONFIG"] = os.path.join(federation_root, "software", toolchain[1], toolchain[2])
+    if args.pt is True: mkToPy_2.print_table(variable_table)
+
 #==========================================Path Setup========================================
     MODEL                   = variable_table["MODEL"]
     CONFIG                  = variable_table["CONFIG"]
@@ -421,8 +428,8 @@ def main():
     MEMALPHA                            = os.path.join(federation_root, "memory-alpha", "bin", "memalpha")
 
     firrtl_build_elaborated_config_json = os.path.join(firrtl_build_dir, "elaborated_config.json")
-    firrtl_build_dts_json               = os.path.join(firrtl_build_dir, core_name + ".json") #NOTICEME
-    INPUT_CONFIG                        = os.path.join(federation_root, "configs", core_name + ".yml")
+    firrtl_build_dts_json               = os.path.join(firrtl_build_dir, core_name+".json") #NOTICEME
+    INPUT_CONFIG                        = os.path.join(federation_root, "configs", core_name+".yml")
     BUILD_ELABORATED_CONFIG_JSON        = os.path.join(federation_root, "scripts", "build-elaborated-config-json.py")
 
     software_build_dir                          = os.path.join(build_dir, "software")
@@ -432,14 +439,14 @@ def main():
     software_toolchain_dir                      = os.path.join(software_dir, "toolchain")
     toolchain_build_toolchain                   = os.path.join(software_toolchain_dir, "build_toolchain.py")
     TOOLCHAIN_CONFIG                            = variable_table["TOOLCHAIN_CONFIG"]
-    firrtl_build_iof_json                       = os.path.join(firrtl_build_dir, core_name + ".iof.json")
+    firrtl_build_iof_json                       = os.path.join(firrtl_build_dir, core_name+".iof.json")
     toolchain_build_dir                         = os.path.join(build_dir, "software", "toolchain")
 
     software_scripts_dir                        = os.path.join(software_dir, "scripts")
     BUILD_MEMINFO_LIB                           = os.path.join(software_scripts_dir, "build-meminfo-lib")
-    toolchain_build_meminfo_dir                 = os.path.join(toolchain_build_dir, "libraries", "meminfo")
+    toolchain_build_meminfo_dir                 = os.path.join(toolchain_build_dir,  "libraries", "meminfo")
     BUILD_HARTINFO_LIB                          = os.path.join(software_scripts_dir, "build-hartinfo-lib")
-    toolchain_build_hartinfo_dir                = os.path.join(toolchain_build_dir, "libraries", "hartinfo")
+    toolchain_build_hartinfo_dir                = os.path.join(toolchain_build_dir,  "libraries", "hartinfo")
 
     package_build_dir                           = ""
     sim_build_dir                               = os.path.join(build_dir, "sim")
@@ -451,8 +458,6 @@ def main():
     #copy file_index.json --> builds/coreip_e31/metadata/
     os.makedirs(metadata_build_dir)
     os.makedirs(verilog_build_dir)
-    #original_file_index = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd", "metadata", "file_index.json")
-    #os.system("cp " + original_file_index + " " + metadata_build_dir)
     gen_file_index(\
             federation_root,\
             software_scripts_dir,\
@@ -467,7 +472,7 @@ def main():
             software_build_dir,\
             verilog_build_dir,\
             variable_table
-    ) #ACTION
+    )
 
     #copy builds/coreip_e31_fcd/sim -->builds/coreip_e31_fcd_try/
     #original_sim_folder = os.path.join(federation_root, "builds", "coreip_" + core_name + "_fcd", "sim")
@@ -507,13 +512,13 @@ def main():
 
 #==========================================================================================
     #verilog_build_conf
-        #Wit/Wake:metadata/*   -->   build/coreip/metadata/
+    #Wit/Wake:metadata/*   -->   build/coreip/metadata/
     wake_metadata = os.path.join(wake_build, "metadata", "*")
     os.system("cp -r " + wake_metadata + " " + metadata_build_dir)
 
     #FIRRTL cmd
     wake_CMDLINE_ANNO_FILE      = os.path.join(wake_build, "firrtl", core_name + ".cmdline.anno.json")
-            #Wit/Wake:firrtl/e31.cmdline.anno.json      -->     build/verilog/e31.cmdline.anno.json
+    #Wit/Wake:firrtl/e31.cmdline.anno.json      -->     build/verilog/e31.cmdline.anno.json
     os.system("cp " + wake_CMDLINE_ANNO_FILE + " " + fedr_CMDLINE_ANNO_FILE)
     VERILOG_ANNO_FILES_LIST     = [os.path.join(firrtl_build_dir, core_name + ".anno.json"),
                                     os.path.join(verilog_build_dir, core_name + ".cmdline.anno.json")]
@@ -524,16 +529,18 @@ def main():
     MODEL                       = variable_table["MODEL"]
     FIRRTL                      = JAVA + "-Xmx" + FIRRTL_MAX_HEAP + " -Xss" + \
                                     FIRRTL_MAX_STACK +  " -cp " + federation_jar + " " + FIRRTL_MAIN
+
     VERILOG_FIRRTL_ARGS         = "--infer-rw" + " " + MODEL + " "\
                                   "--repl-seq-mem -c:" + MODEL + ":-o:" + verilog_build_conf + " " +\
                                   "--split-modules -tn " + MODEL + " " +\
                                   "-td " + verilog_build_design_dir + " "  + \
                                   "-fct " + ",".join(FIRRTL_TRANSFORMS) + " " + \
                                   " -faf " + " -faf ".join(VERILOG_ANNO_FILES_LIST) + " -ll info "
+
     FIRRTL_CMDLINE              = FIRRTL + " -i " + os.path.join(firrtl_build_dir, core_name + ".pb") + \
                                     " -X verilog " + VERILOG_FIRRTL_ARGS
-        #Input:     e31.cmdline.anno.json
-        #Output:    CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf && .V files
+    #Input:     e31.cmdline.anno.json
+    #Output:    CoreIPSubsystemAllPortRAMTestHarness.SiFiveCoreDesignerAlterations.conf && .V files
     #os.system(FIRRTL_CMDLINE) #ACTION
     print(FIRRTL_CMDLINE)
 #==============================================================================================
@@ -616,8 +623,8 @@ def main():
 
 
     #MEMGEN
-        #preMemGen
-        #create memgen directory
+    #preMemGen
+    #create memgen directory
     os.makedirs(memgen_build_dir)
 
     #dpi_raminfo
@@ -625,8 +632,8 @@ def main():
     #Input:     build/coreip/verif/libraries/design_info/c/dpi_raminfo.c
 
     #Output:    build/coreip/memgen/dpi_raminfo.o
-    CXX         = "/sifive/tools/gcc/7.2.0/bin/g++"
-    svdpi_dir   = "/sifive/vip/ieee/1800-2017/include"
+    CXX         = varaible_table["CXX"]
+    svdpi_dir   = varaible_table["svdpi_dir"]
     cmd         = CXX + " -c -Wall -Wno-unused-variable -I" + svdpi_dir + " " + \
                     os.path.join(verif_libraries_design_info_c, "dpi_raminfo.c") + " -o " + \
                     os.path.join(memgen_build_dir, "dpi_raminfo.o")
@@ -654,9 +661,9 @@ def main():
             os.path.join(memgen_build_dir, "dpi_raminfo.o")
     os.system(cmd)
 
-        #realMemGen
-        #Output:    build/coreip/memgen/memalpha.json
-        #Output:    build/coreip/memgen/rams.v
+    #realMemGen
+    #Output:    build/coreip/memgen/memalpha.json
+    #Output:    build/coreip/memgen/rams.v
     INTERACTIVE                     = False
     MEMORY_COMPILER_SIZE_THRESHOLD  = str(0)
     #PREPEND_MEMORY_WRAPPER          = False #CHECKME
