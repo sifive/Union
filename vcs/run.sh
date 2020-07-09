@@ -18,7 +18,7 @@ echo " 512    : vcs compile child module "
 echo " 1024   : syscan on sc_top module "
 echo " 2048   : vcs compile"
 
-childdir=/home/ahung/vcs/child
+childdir=/home/ahung/union/vcs/child
 
 sysch=/sifive/tools/synopsys/vcs/Q-2020.03-SP1/include/systemc231
 
