@@ -76,13 +76,25 @@ if [ $(($cmdarg & (16))) -ne 0 ]; then
 fi
 
 # note: we need fPIC
-if [ $(($cmdarg & (256))) -ne 0 ]; then
+if [ $(($cmdarg & (128))) -ne 0 ]; then
   echo ...........................
   echo do our gcc compile
 #  g++ -v
   sleep 2
   $gccpath -fPIC -shared sysc_sample.cpp -o ./sctest.so 
   $gccpath -fPIC -shared -I$sysch/.. -I$sysch user_main_function.cpp sysc_sample.cpp -o ./scsim.so 
+  echo do our gcc compile done
+
+fi
+
+
+
+# note: we need fPIC
+if [ $(($cmdarg & (256))) -ne 0 ]; then
+  echo ...........................
+  echo do our gcc compile
+  sleep 2
+  $gccpath -fPIC -shared -I$sysch/.. -I$sysch sysc_sample.cpp -o ./scsim.so 
   echo do our gcc compile done
 
 fi
