@@ -13,6 +13,7 @@ echo " 1      : module load 2015 version vcs"
 echo " 2      : module load synopsys generic "
 echo " 4      : module load 2019 version vcs"
 echo " 16     : clean "
+echo " 128    : gcc compile x2"
 echo " 256    : gcc compile "
 echo " 512    : vcs compile child module "
 echo " 1024   : syscan on sc_top module "
@@ -25,8 +26,7 @@ sysch=/sifive/tools/synopsys/vcs/Q-2020.03-SP1/include/systemc231
 if [ $(($# )) -ne 0 ]; then
   cmdarg=$1
 else
-  cmdarg=131072
-  cmdarg=3858
+  cmdarg=3714
 fi
 
 gccpath=/sifive/tools/gcc/4.8.3/bin/g++
@@ -148,8 +148,8 @@ if [ $(($cmdarg & (65536))) -ne 0 ]; then
   echo various info............. 
   echo \-Mlib=$childdir \-Mdir=$childdir/../csrc -sysc=2.3.1 $childdir/../scsim.so -cpp $gccpath  
 
-module list
-echo gccpath: $gccpath
+  module list
+  echo gccpath: $gccpath
 
 fi
 
