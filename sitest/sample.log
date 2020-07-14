@@ -1,0 +1,78 @@
+hello world from SC standalone module user_main_function.cpp line 26 cnt=0
+hello world from standalone_class in=17 this=0x2aaaac940e38 cnt=0
+Notice: timing checks disabled with +notimingcheck at compile-time
+Chronologic VCS simulator copyright 1991-2020
+Contains Synopsys proprietary information.
+Compiler version Q-2020.03-SP1_Full64; Runtime version Q-2020.03-SP1_Full64;  Jul 14 00:44 2020
+UVM_INFO /sifive/tools/synopsys/vcs/Q-2020.03-SP1/etc/uvm-1.2/base/uvm_root.svh(412) @ 0: reporter [UVM/RELNOTES] 
+----------------------------------------------------------------
+UVM-1.2.Synopsys
+(C) 2007-2014 Mentor Graphics Corporation
+(C) 2007-2014 Cadence Design Systems, Inc.
+(C) 2006-2014 Synopsys, Inc.
+(C) 2011-2013 Cypress Semiconductor Corp.
+(C) 2013-2014 NVIDIA Corporation
+----------------------------------------------------------------
+
+  ***********       IMPORTANT RELEASE NOTES         ************
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_NO_DEPRECATED undefined.
+  See http://www.eda.org/svdb/view.php?id=3313 for more details.
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_OBJECT_DO_NOT_NEED_CONSTRUCTOR undefined.
+  See http://www.eda.org/svdb/view.php?id=3770 for more details.
+
+      (Specify +UVM_NO_RELNOTES to turn off this notice)
+
+sifive_objections_pkg::register@(t=0): Objection ID Registering Index [1] for [TestDriver.testHarness.system.testIndicator.i_TF]
+sifive_objections_pkg::register@(t=0): Objection ID Registering Index [2] for [TestDriver]
+sifive_test_results_pkg::register@(t=0): Test Result ID Registering Index [1] for [TestDriver]
+calling from user_main_function cnt=0
+hello world from SC /home/ahung/union/vcs/sc_top.h line 14
+hello world from SC standalone module before_end_of_elaboration line 41 
+
+Note-[SC-TCMM-V5] Type conversion mismatch
+  Mapping a 4-state logic 'wire clk' onto a 2-state type 'bool' converts all 
+  'x' and 'z' values into '0'.
+  To prevent this conversion, adjust the port types at the interface between 
+  your SystemC and Verilog modules. 
+
+hello world from SC standalone module end_of_elaboration line 37 
+hello world from SC standalone module user_main_function.cpp line 54 i=0
+hello world from SC /home/ahung/union/vcs/./sc_top.cpp line 21
+TestFinisher instance path is [TestDriver.testHarness.system.testIndicator.i_TF]
+sifive_test_results_pkg::register@(t=0): Test Result ID Registering Index [2] for [TestDriver.testHarness.system.testIndicator.i_TF]
+sifive_objections_pkg::raise_objection@(t=0): Index [1] for phase [main_e]
+sifive_objections_pkg::raise_objection@(t=0): Index [2] for phase [reset_e]
+sifive_objections_pkg::raise_objection@(t=0): Index [2] for phase [main_e]
+VCD+ Writer Q-2020.03-SP1_Full64 Copyright (c) 1991-2020 by Synopsys Inc.
+TestDriver.run_phase@(t=1000/cyc=0): transitioning run-phase from [invalid_e] to [pre_reset_e]
+hello world from SC standalone module user_main_function.cpp line 54 i=1
+sifive_test_results_pkg::set@(t=1000): Test Result Setting for Index ID [1] Done [1] Success [1] Exit Code [0]
+sifive_objections_pkg::drop_objection@(t=1000): Index [2] for phase [main_e]
+TestDriver.run_phase@(t=2000/cyc=1): transitioning run-phase from [pre_reset_e] to [reset_e]
+hello world from SC standalone module user_main_function.cpp line 54 i=2
+hello world from SC standalone module user_main_function.cpp line 54 i=3
+hello world from SC standalone module user_main_function.cpp line 54 i=4
+hello world from SC standalone module user_main_function.cpp line 54 i=5
+hello world from SC standalone module user_main_function.cpp line 54 i=6
+hello world from SC standalone module user_main_function.cpp line 54 i=7
+hello world from SC standalone module user_main_function.cpp line 54 i=8
+hello world from SC standalone module user_main_function.cpp line 54 i=9
+hello world from SC standalone module user_main_function.cpp line 54 i=10
+hello world from SC standalone module user_main_function.cpp line 54 i=11
+hello world from SC standalone module user_main_function.cpp line 54 i=12
+hello world from SC standalone module user_main_function.cpp line 54 i=13
+hello world from SC standalone module user_main_function.cpp line 54 i=14
+hello world from SC standalone module user_main_function.cpp line 54 i=15
+hello world from SC standalone module user_main_function.cpp line 54 i=16
+hello world from SC standalone module user_main_function.cpp line 54 i=17
+hello world from SC standalone module user_main_function.cpp line 54 i=18
+hello world from SC standalone module user_main_function.cpp line 54 i=19
+hello world from SC user_main_function.cpp standalone module line 57 
+sifive_objections_pkg::drop_objection@(t=778000): Index [2] for phase [reset_e]
+loading from program hex file program.hex
+TestDriver.run_phase@(t=779000/cyc=778): transitioning run-phase from [reset_e] to [configure_e]
+TestDriver.run_phase@(t=780000/cyc=779): transitioning run-phase from [configure_e] to [main_e]
