@@ -14,7 +14,7 @@ public:
   standalone_class()
   {
     static int cnt=0;
-    printf ("hello world from %s in=%d this=%p cnt=%d\n", __FUNCTION__, __LINE__, this,cnt); 
+    printf ("hello world from standalone SC module %s in=%d this=%p cnt=%d\n", __FUNCTION__, __LINE__, this,cnt); 
     assert (++cnt<2 && "how can we call this twice???");
   }
 

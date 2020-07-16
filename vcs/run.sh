@@ -114,7 +114,7 @@ fi
 
 # we can do 655360
 if [ $(($cmdarg & (1024))) -ne 0 ]; then
-  echo proof of concept SC stuff stuff.......
+  echo proof of concept SC syscan stuff.......
 
   echo doing syscan, which is wrapper generation
   sleep 2
