@@ -30,7 +30,7 @@ else
 fi
 
 gccpath=/sifive/tools/gcc/4.8.3/bin/g++
-gccpath=/scratch/ahung/gcc/gcc-6.2.0/bin/g++
+gccpath=/sifive/tools/gcc/6.2.0/bin/g++
 echo cmdarg: $cmdarg
 
 $gccpath -v
